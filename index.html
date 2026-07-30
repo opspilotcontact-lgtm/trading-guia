@@ -1,0 +1,1895 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>El Francotirador de Liquidez — Manual de campo</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@500;700;800&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --tinta:#0E1116; --papel:#161B22; --papel2:#1C222B; --linea:#242C37; --linea2:#303A47;
+  --hueso:#E9E6DD; --ceniza:#98A1AE; --sombra:#6B7583;
+  --trazador:#FFB021; --trazador-dim:#8a5f14;
+  --alza:#4CC38A; --baja:#E5534B; --baja-dim:#7c2f2b;
+  --mono:'IBM Plex Mono',monospace; --sans:'IBM Plex Sans',sans-serif; --disp:'Big Shoulders Display',sans-serif;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{background:var(--tinta);color:var(--hueso);font-family:var(--sans);font-size:16.5px;line-height:1.75;-webkit-font-smoothing:antialiased}
+::selection{background:var(--trazador);color:var(--tinta)}
+h1,h2,h3,h4{font-family:var(--disp);font-weight:700;letter-spacing:.02em;line-height:1.05}
+a{color:var(--trazador);text-decoration:none}
+strong{color:var(--hueso);font-weight:600}
+em{color:var(--ceniza)}
+code,.mono{font-family:var(--mono)}
+.grid-bg{background-image:linear-gradient(var(--linea) 1px,transparent 1px),linear-gradient(90deg,var(--linea) 1px,transparent 1px);background-size:44px 44px;background-position:center}
+/* ---- rail ---- */
+nav.rail{position:fixed;left:0;top:0;bottom:0;width:238px;background:var(--papel);border-right:1px solid var(--linea);padding:26px 0 20px;overflow-y:auto;z-index:50}
+nav.rail::-webkit-scrollbar{width:4px}nav.rail::-webkit-scrollbar-thumb{background:var(--linea2)}
+.rail-logo{padding:0 22px 20px;border-bottom:1px solid var(--linea);margin-bottom:14px}
+.rail-logo .mira{font-family:var(--disp);font-weight:800;font-size:21px;letter-spacing:.06em;color:var(--hueso)}
+.rail-logo .mira b{color:var(--trazador)}
+.rail-logo .sub{font-family:var(--mono);font-size:10.5px;color:var(--sombra);letter-spacing:.14em;text-transform:uppercase;margin-top:2px}
+nav.rail a.item{display:flex;gap:10px;align-items:baseline;padding:7px 22px;color:var(--ceniza);font-size:13.5px;border-left:2px solid transparent;transition:.15s}
+nav.rail a.item:hover{color:var(--hueso);background:var(--papel2)}
+nav.rail a.item.active{color:var(--trazador);border-left-color:var(--trazador);background:var(--papel2)}
+nav.rail a.item .num{font-family:var(--mono);font-size:10.5px;color:var(--sombra);min-width:32px}
+nav.rail a.item.soon{opacity:.38;pointer-events:none}
+nav.rail a.item.soon .tag{font-family:var(--mono);font-size:9px;color:var(--trazador-dim);border:1px solid var(--trazador-dim);padding:0 4px;border-radius:2px;margin-left:auto}
+.rail-note{padding:16px 22px 0;font-family:var(--mono);font-size:10px;color:var(--sombra);line-height:1.6;border-top:1px solid var(--linea);margin-top:14px}
+main{margin-left:238px}
+@media(max-width:960px){nav.rail{display:none}main{margin-left:0}}
+/* ---- hero ---- */
+.hero{min-height:92vh;display:flex;flex-direction:column;justify-content:center;padding:70px 7vw 60px;position:relative;overflow:hidden}
+.hero .stamp{font-family:var(--mono);font-size:11px;letter-spacing:.22em;color:var(--trazador);text-transform:uppercase;border:1px solid var(--trazador-dim);display:inline-block;padding:5px 12px;border-radius:2px;margin-bottom:34px;width:max-content}
+.hero h1{font-size:clamp(56px,9vw,124px);font-weight:800;text-transform:uppercase;color:var(--hueso)}
+.hero h1 .fx{color:transparent;-webkit-text-stroke:1.5px var(--trazador)}
+.hero p.lead{max-width:620px;margin-top:26px;font-size:19px;color:var(--ceniza)}
+.hero p.lead b{color:var(--hueso)}
+.hero .abajo{margin-top:52px;display:flex;gap:14px;flex-wrap:wrap}
+.chip{font-family:var(--mono);font-size:12.5px;color:var(--ceniza);border:1px solid var(--linea2);background:var(--papel);padding:10px 16px;border-radius:3px}
+.chip b{color:var(--trazador);font-weight:600}
+.cross{position:absolute;right:6vw;top:50%;transform:translateY(-50%);opacity:.55;pointer-events:none}
+@media(max-width:1200px){.cross{display:none}}
+/* ---- secciones ---- */
+section.mod{padding:90px 7vw;border-top:1px solid var(--linea)}
+section.mod.alt{background:var(--papel)}
+.mod-head{margin-bottom:44px;max-width:860px}
+.mod-head .kicker{font-family:var(--mono);font-size:11.5px;letter-spacing:.24em;color:var(--trazador);text-transform:uppercase;display:flex;align-items:center;gap:12px;margin-bottom:14px}
+.mod-head .kicker::after{content:"";height:1px;flex:1;max-width:120px;background:var(--trazador-dim)}
+.mod-head h2{font-size:clamp(34px,4.5vw,54px);text-transform:uppercase}
+.mod-head p.intro{margin-top:16px;color:var(--ceniza);font-size:17.5px;max-width:760px}
+.prosa{max-width:760px}
+.prosa p{margin-bottom:1.1em;color:#c9cdd4}
+.prosa p b,.prosa li b{color:var(--hueso)}
+/* concepto: 3 capas */
+.concepto{background:var(--papel2);border:1px solid var(--linea);border-radius:6px;margin:26px 0;max-width:860px;overflow:hidden}
+.concepto .frase{padding:20px 24px;display:flex;gap:14px;align-items:baseline}
+.concepto .frase .n{font-family:var(--mono);color:var(--trazador);font-size:12px;letter-spacing:.1em;white-space:nowrap}
+.concepto .frase p{font-size:17px;font-weight:500;color:var(--hueso)}
+.concepto details{border-top:1px solid var(--linea)}
+.concepto summary{cursor:pointer;list-style:none;padding:13px 24px;font-family:var(--mono);font-size:11.5px;letter-spacing:.18em;text-transform:uppercase;color:var(--ceniza);display:flex;align-items:center;gap:10px;user-select:none}
+.concepto summary:hover{color:var(--trazador)}
+.concepto summary::before{content:"+";color:var(--trazador);font-size:14px;width:14px}
+.concepto details[open] summary::before{content:"–"}
+.concepto details .cuerpo{padding:4px 24px 22px;color:#c3c8cf;font-size:15.5px;max-width:820px}
+.concepto details .cuerpo p{margin-bottom:.9em}
+.formula{font-family:var(--mono);background:var(--tinta);border:1px solid var(--linea2);border-left:3px solid var(--trazador);padding:14px 18px;border-radius:3px;margin:14px 0;font-size:14px;color:var(--hueso);overflow-x:auto}
+/* expediente real */
+.expediente{border:1px solid var(--trazador-dim);background:linear-gradient(0deg,rgba(255,176,33,.045),rgba(255,176,33,.045)),var(--papel);border-radius:6px;padding:24px 26px;margin:30px 0;max-width:860px;position:relative}
+.expediente .sello{position:absolute;top:-11px;left:20px;background:var(--tinta);border:1px solid var(--trazador);color:var(--trazador);font-family:var(--mono);font-size:10.5px;letter-spacing:.2em;padding:3px 10px;border-radius:2px;text-transform:uppercase}
+.expediente h4{font-size:20px;margin-bottom:10px;color:var(--hueso);text-transform:uppercase;letter-spacing:.03em}
+.expediente p{color:#c9cdd4;font-size:15.5px;margin-bottom:.8em}
+.expediente .dato{font-family:var(--mono);color:var(--trazador);font-size:14px}
+.expediente .lec{border-top:1px dashed var(--trazador-dim);padding-top:12px;margin-top:6px;font-size:15px;color:var(--hueso)}
+.expediente .lec::before{content:"LECCIÓN → ";font-family:var(--mono);font-size:11px;color:var(--trazador);letter-spacing:.15em}
+/* figuras */
+figure.fig{margin:34px 0;max-width:860px;background:var(--papel2);border:1px solid var(--linea);border-radius:6px;padding:22px}
+figure.fig svg{width:100%;height:auto;display:block}
+figure.fig figcaption{font-family:var(--mono);font-size:12px;color:var(--sombra);margin-top:14px;line-height:1.6;border-top:1px solid var(--linea);padding-top:12px}
+figure.fig figcaption b{color:var(--ceniza)}
+/* widgets */
+.widget{background:var(--papel2);border:1px solid var(--linea2);border-radius:6px;padding:26px;margin:30px 0;max-width:860px}
+.widget h3{font-size:22px;text-transform:uppercase;letter-spacing:.04em;margin-bottom:6px}
+.widget .wsub{font-size:14px;color:var(--sombra);margin-bottom:20px;font-family:var(--mono)}
+.ctrl{display:flex;align-items:center;gap:14px;margin:12px 0}
+.ctrl label{font-family:var(--mono);font-size:12.5px;color:var(--ceniza);min-width:170px;letter-spacing:.05em}
+.ctrl input[type=range]{flex:1;accent-color:var(--trazador);height:4px}
+.ctrl output{font-family:var(--mono);font-size:14px;color:var(--trazador);min-width:70px;text-align:right;font-weight:600}
+.ctrl input[type=number]{background:var(--tinta);border:1px solid var(--linea2);color:var(--hueso);font-family:var(--mono);font-size:14px;padding:8px 10px;border-radius:3px;width:130px}
+.ctrl input[type=number]:focus{outline:1px solid var(--trazador)}
+.veredicto{margin-top:18px;padding:16px 20px;border-radius:4px;font-size:15.5px;border:1px solid var(--linea2);background:var(--tinta)}
+.veredicto .big{font-family:var(--mono);font-size:20px;font-weight:600;display:block;margin-bottom:4px}
+.v-alza{border-color:var(--alza)}.v-alza .big{color:var(--alza)}
+.v-baja{border-color:var(--baja)}.v-baja .big{color:var(--baja)}
+.v-neutro{border-color:var(--trazador-dim)}.v-neutro .big{color:var(--trazador)}
+table.tbl{width:100%;border-collapse:collapse;font-family:var(--mono);font-size:13px;margin-top:14px}
+table.tbl th{color:var(--sombra);font-weight:500;text-align:left;padding:8px 10px;border-bottom:1px solid var(--linea2);font-size:11px;letter-spacing:.12em;text-transform:uppercase}
+table.tbl td{padding:8px 10px;border-bottom:1px solid var(--linea);color:#c9cdd4}
+table.tbl td.hi{color:var(--trazador);font-weight:600}
+/* sesgos grid */
+.sesgos{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:16px;max-width:1040px}
+.sesgo{background:var(--papel2);border:1px solid var(--linea);border-radius:6px;padding:22px}
+.sesgo h4{font-size:19px;text-transform:uppercase;letter-spacing:.03em;color:var(--baja);margin-bottom:8px}
+.sesgo p{font-size:14.5px;color:#bfc4cc;margin-bottom:10px}
+.sesgo .anti{border-top:1px solid var(--linea);padding-top:10px;font-size:14px;color:var(--hueso)}
+.sesgo .anti::before{content:"ANTÍDOTO → ";font-family:var(--mono);font-size:10.5px;color:var(--alza);letter-spacing:.14em}
+dl.glos{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:14px;max-width:1040px;margin-top:10px}
+dl.glos div{background:var(--papel2);border:1px solid var(--linea);border-radius:5px;padding:14px 16px}
+dl.glos dt{font-family:var(--mono);font-size:12.5px;color:var(--trazador);letter-spacing:.08em;text-transform:uppercase;margin-bottom:5px}
+dl.glos dd{font-size:14px;color:#bfc4cc;line-height:1.6}
+.errs{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:16px;max-width:1080px}
+.err{background:var(--papel2);border:1px solid var(--linea);border-left:3px solid var(--baja);border-radius:0 5px 5px 0;padding:20px 22px}
+.err h4{font-size:18px;text-transform:uppercase;color:var(--hueso);margin-bottom:6px;letter-spacing:.03em}
+.err .como{font-size:13.5px;color:#bfc4cc;margin-bottom:8px}
+.err .coste{font-family:var(--mono);font-size:12px;color:var(--baja);margin-bottom:8px}
+.err .regla{border-top:1px solid var(--linea);padding-top:8px;font-size:13.5px;color:var(--hueso)}
+.err .regla::before{content:"REGLA → ";font-family:var(--mono);font-size:10px;color:var(--alza);letter-spacing:.14em}
+.galeria{display:grid;grid-template-columns:repeat(auto-fit,minmax(360px,1fr));gap:18px;max-width:1080px}
+.pat{background:var(--papel2);border:1px solid var(--linea);border-radius:6px;padding:16px}
+.pat svg{width:100%;height:auto}
+.pat .pt{font-family:var(--mono);font-size:12px;color:var(--trazador);letter-spacing:.1em;text-transform:uppercase;margin-bottom:8px}
+.pat .pd{font-size:13px;color:var(--sombra);margin-top:10px;border-top:1px solid var(--linea);padding-top:9px;line-height:1.6}
+.dform{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin:14px 0}
+.dform label{font-family:var(--mono);font-size:10.5px;color:var(--sombra);letter-spacing:.1em;text-transform:uppercase;display:block;margin-bottom:5px}
+.dform input,.dform select{width:100%;background:var(--tinta);border:1px solid var(--linea2);color:var(--hueso);font-family:var(--mono);font-size:13.5px;padding:9px 10px;border-radius:3px}
+.dform input:focus,.dform select:focus{outline:1px solid var(--trazador)}
+table.diario{width:100%;border-collapse:collapse;font-family:var(--mono);font-size:12.5px;margin-top:16px}
+table.diario th{color:var(--sombra);text-align:left;padding:7px 8px;border-bottom:1px solid var(--linea2);font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;font-weight:500}
+table.diario td{padding:7px 8px;border-bottom:1px solid var(--linea);color:#c9cdd4}
+table.diario td.pos{color:var(--alza)}table.diario td.neg{color:var(--baja)}
+table.diario button{background:none;border:none;color:var(--sombra);cursor:pointer;font-size:14px}
+table.diario button:hover{color:var(--baja)}
+.chk-grupo{background:var(--papel2);border:1px solid var(--linea);border-radius:6px;padding:22px 24px;margin-bottom:18px;max-width:760px}
+.chk-grupo h4{font-size:19px;text-transform:uppercase;letter-spacing:.04em;margin-bottom:14px}
+.chk-grupo label{display:flex;gap:12px;align-items:flex-start;padding:9px 0;border-bottom:1px solid var(--linea);font-size:15px;color:#c9cdd4;cursor:pointer}
+.chk-grupo label:last-of-type{border-bottom:none}
+.chk-grupo input{accent-color:var(--trazador);width:17px;height:17px;margin-top:3px;flex-shrink:0}
+#chk-boton{margin-top:16px;width:100%;padding:16px;border-radius:4px;font-family:var(--mono);font-size:14px;letter-spacing:.15em;text-transform:uppercase;border:1px solid var(--baja);background:rgba(229,83,75,.08);color:var(--baja);cursor:not-allowed;transition:.25s}
+#chk-boton.libre{border-color:var(--alza);background:rgba(76,195,138,.1);color:var(--alza);cursor:default}
+.sim-pasos{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px}
+.sim-pasos span{font-family:var(--mono);font-size:10.5px;letter-spacing:.08em;padding:5px 10px;border-radius:2px;border:1px solid var(--linea2);color:var(--sombra)}
+.sim-pasos span.act{border-color:var(--trazador);color:var(--trazador)}
+.sim-pasos span.hecho{border-color:var(--alza);color:var(--alza)}
+.sim-instr{background:var(--tinta);border:1px solid var(--linea2);border-left:3px solid var(--trazador);border-radius:3px;padding:15px 18px;font-size:15px;color:#d5d9de;margin-bottom:14px}
+.sim-instr b{color:var(--trazador)}
+#sim-cv{width:100%;background:var(--tinta);border:1px solid var(--linea);border-radius:4px;cursor:crosshair;display:block;touch-action:manipulation}
+.sim-fb{font-family:var(--mono);font-size:13px;min-height:22px;margin-top:10px;color:var(--ceniza)}
+.sim-fb.ok{color:var(--alza)}.sim-fb.mal{color:var(--baja)}
+.sim-botones{display:flex;gap:10px;margin-top:12px;flex-wrap:wrap}
+.q{background:var(--papel2);border:1px solid var(--linea);border-radius:6px;padding:20px 22px;margin-bottom:16px;max-width:860px}
+.q .qn{font-family:var(--mono);font-size:11px;color:var(--trazador);letter-spacing:.14em;margin-bottom:8px}
+.q .qt{font-size:16px;color:var(--hueso);font-weight:500;margin-bottom:14px}
+.q .ops{display:grid;gap:8px}
+.q .ops button{text-align:left;background:var(--tinta);border:1px solid var(--linea2);color:#c9cdd4;font-family:var(--sans);font-size:14.5px;padding:11px 14px;border-radius:3px;cursor:pointer;transition:.12s}
+.q .ops button:hover{border-color:var(--trazador)}
+.q .ops button.sel{border-color:var(--trazador);color:var(--trazador)}
+.q .ops button.ok{border-color:var(--alza);color:var(--alza)}
+.q .ops button.mal{border-color:var(--baja);color:var(--baja)}
+.q .expl{display:none;margin-top:12px;border-top:1px dashed var(--linea2);padding-top:10px;font-size:13.5px;color:var(--ceniza)}
+.q svg{width:100%;max-width:420px;height:auto;display:block;margin:6px 0 12px;background:var(--tinta);border:1px solid var(--linea);border-radius:3px}
+.pbtn{background:var(--tinta);border:1px solid var(--linea2);color:var(--ceniza);font-family:var(--mono);font-size:12px;letter-spacing:.05em;padding:9px 14px;border-radius:3px;cursor:pointer;transition:.15s}
+.pbtn:hover{border-color:var(--trazador);color:var(--trazador)}
+.pbtn.on{border-color:var(--trazador);color:var(--trazador);background:rgba(255,176,33,.07)}
+@media(max-width:700px){body{font-size:15.5px}}
+html,body{overflow-x:hidden;max-width:100vw}
+main{max-width:100%}
+figure.fig svg,.widget svg{max-width:none}
+img,canvas{max-width:100%}
+.scrollx{overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:thin}
+.scrollx::-webkit-scrollbar{height:5px}.scrollx::-webkit-scrollbar-thumb{background:var(--linea2);border-radius:3px}
+.swipehint{display:none;font-family:var(--mono);font-size:10.5px;color:var(--trazador);letter-spacing:.08em;margin-bottom:8px}
+.topbar{display:none;position:fixed;top:0;left:0;right:0;height:54px;background:var(--papel);border-bottom:1px solid var(--linea);z-index:70;align-items:center;gap:14px;padding:0 16px}
+.topbar .mira{font-family:var(--disp);font-weight:800;font-size:18px;letter-spacing:.06em;color:var(--hueso)}
+.topbar .mira b{color:var(--trazador)}
+#nav-toggle{margin-left:auto;background:var(--tinta);border:1px solid var(--linea2);color:var(--hueso);font-size:19px;line-height:1;padding:8px 12px;border-radius:4px;cursor:pointer}
+#mnav{display:none;position:fixed;top:54px;left:0;right:0;bottom:0;background:var(--papel);z-index:69;overflow-y:auto;padding:12px 0 30px}
+#mnav.open{display:block}
+#mnav a.item{display:flex;gap:12px;align-items:baseline;padding:13px 22px;color:var(--ceniza);font-size:15px;text-decoration:none;border-bottom:1px solid var(--linea)}
+#mnav a.item .num{font-family:var(--mono);font-size:11px;color:var(--sombra);min-width:44px}
+#mnav a.item:active{background:var(--papel2);color:var(--trazador)}
+@media(max-width:960px){
+  .topbar{display:flex}
+  main{padding-top:54px}
+  .hero{min-height:auto;padding:56px 6vw 50px}
+  .hero h1{font-size:clamp(40px,11.5vw,80px)}
+  .hero p.lead{font-size:17px}
+}
+@media(max-width:700px){
+  section.mod{padding:56px 5vw}
+  .mod-head h2{font-size:clamp(27px,7.5vw,40px)}
+  .mod-head p.intro{font-size:16px}
+  .concepto .frase{padding:16px 16px;flex-direction:column;gap:6px}
+  .concepto summary,.concepto details .cuerpo{padding-left:16px;padding-right:16px}
+  .expediente{padding:20px 16px}
+  figure.fig{padding:14px}
+  .widget{padding:18px 16px}
+  .ctrl{flex-wrap:wrap;gap:8px}
+  .ctrl label{min-width:100%;margin-bottom:0}
+  .ctrl input[type=range]{flex:1;min-width:0}
+  .ctrl input[type=number]{width:100%}
+  .swipehint{display:block}
+  .q{padding:16px}
+  .q .ops button{font-size:14px}
+  .sim-instr{font-size:14.5px;padding:13px 14px}
+  .chk-grupo{padding:18px 16px}
+  .chk-grupo label{font-size:14.5px}
+  table.diario thead{display:none}
+  table.diario,table.diario tbody,table.diario tr,table.diario td{display:block;width:100%}
+  table.diario tr{border:1px solid var(--linea);border-radius:5px;margin-bottom:10px;padding:10px 12px;background:var(--tinta);position:relative}
+  table.diario td{border:none;padding:3px 0;display:flex;gap:10px;align-items:baseline}
+  table.diario td::before{content:attr(data-l);font-family:var(--mono);font-size:9.5px;color:var(--sombra);letter-spacing:.12em;text-transform:uppercase;min-width:58px;flex-shrink:0}
+  table.diario td[data-l="Nota"]{white-space:normal!important;max-width:none!important;overflow:visible!important}
+  table.diario td[data-l=""]{position:absolute;top:6px;right:8px;width:auto;padding:0}
+  table.diario td[data-l=""]::before{display:none}
+  table.diario td[colspan]{display:block}
+  table.diario td[colspan]::before{display:none}
+  .rail-note{display:none}
+}
+
+.climas{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:16px;max-width:1080px}
+.clima{background:var(--papel2);border:1px solid var(--linea);border-top:3px solid var(--trazador-dim);border-radius:0 0 6px 6px;padding:20px 22px}
+.clima h4{font-size:18px;text-transform:uppercase;letter-spacing:.03em;margin-bottom:8px}
+.clima .rec{font-size:13.5px;color:#bfc4cc;margin-bottom:10px}
+.clima .rec::before{content:"SE RECONOCE → ";font-family:var(--mono);font-size:10px;color:var(--ceniza);letter-spacing:.12em}
+.clima .proto{border-top:1px solid var(--linea);padding-top:9px;font-size:13.5px;color:var(--hueso)}
+.clima .proto::before{content:"PROTOCOLO → ";font-family:var(--mono);font-size:10px;color:var(--trazador);letter-spacing:.12em}
+.tiro-stats{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:14px}
+.tiro-stats span{font-family:var(--mono);font-size:11.5px;color:var(--ceniza);border:1px solid var(--linea2);background:var(--tinta);padding:7px 12px;border-radius:3px}
+.tiro-stats b{color:var(--trazador)}
+#aud-res h4{font-size:17px;text-transform:uppercase;letter-spacing:.05em;margin:22px 0 8px;color:var(--trazador)}
+.aud-linea{font-family:var(--mono);font-size:12.5px;color:#c9cdd4;padding:6px 0;border-bottom:1px solid var(--linea)}
+.aud-hallazgo{border:1px solid var(--trazador-dim);border-radius:4px;padding:12px 15px;margin:8px 0;font-size:14px;color:var(--hueso);background:rgba(255,176,33,.05)}
+.aud-hallazgo::before{content:"HALLAZGO → ";font-family:var(--mono);font-size:10px;color:var(--trazador);letter-spacing:.14em}
+/* ===== BLINDAJE MOVIL DEFINITIVO (gana por orden en cascada) ===== */
+input[type=range]{min-width:0;max-width:100%}
+input,select,button,output{max-width:100%;min-width:0}
+.widget,.concepto,.expediente,figure.fig,.veredicto,.formula,.q,.chk-grupo,.sim-instr{min-width:0;max-width:100%;box-sizing:border-box}
+@media(max-width:700px){
+.widget{padding:16px 13px}
+.ctrl{display:grid;grid-template-columns:minmax(0,1fr) max-content;column-gap:10px;row-gap:6px;align-items:center;margin:14px 0}
+.ctrl label{grid-column:1/-1;min-width:0;font-size:11.5px;line-height:1.4}
+.ctrl input[type=range]{grid-column:1;width:100%;min-width:0;margin:0}
+.ctrl output{grid-column:2;min-width:0;text-align:right;font-size:13px}
+.ctrl input[type=number],.ctrl input[type=text],.ctrl select{grid-column:1/-1;width:100%;min-width:0}
+.veredicto{padding:13px 13px;font-size:14px;overflow-wrap:anywhere}
+.veredicto .big{font-size:16px;overflow-wrap:anywhere}
+#t-out,#lab-stats,#d-stats,#sim-btns{max-width:100%}
+#t-out{grid-template-columns:repeat(auto-fit,minmax(125px,1fr)) !important}
+#lab-stats{grid-template-columns:repeat(auto-fit,minmax(125px,1fr)) !important}
+#d-stats{grid-template-columns:repeat(auto-fit,minmax(115px,1fr)) !important}
+#t-out>div,#lab-stats>div,#d-stats>div{min-width:0;padding:10px 10px !important}
+#t-out>div>div:last-child,#lab-stats>div>div:last-child,#d-stats>div>div:last-child{font-size:15px !important;overflow-wrap:anywhere}
+.dform{grid-template-columns:1fr 1fr;gap:10px}
+.dform>div{min-width:0}
+.dform input,.dform select{min-width:0;font-size:13px;padding:9px 8px}
+.presets{gap:8px}
+.pbtn{white-space:normal;max-width:100%;text-align:left;font-size:11.5px;padding:9px 11px}
+.sim-botones{gap:8px}
+.sim-botones .pbtn,#sim-btns .pbtn{flex:1 1 140px}
+table.tbl{table-layout:fixed;width:100%}
+table.tbl th,table.tbl td{overflow-wrap:anywhere;padding:8px 6px;font-size:12px}
+table.tbl th{font-size:9.5px}
+.widget h3{font-size:19px}
+.widget .wsub{font-size:12.5px}
+.chip{font-size:11px;padding:8px 11px}
+.hero .abajo{gap:9px}
+.sim-pasos span{font-size:9.5px;padding:4px 8px}
+.sim-fb{font-size:12px}
+.q .qt{font-size:15px}
+.q .ops button{font-size:13.5px;padding:10px 11px;white-space:normal}
+#f-canvas{height:150px}
+#ex-nota{overflow-wrap:anywhere}
+.formula{padding:11px 12px;font-size:12.5px}
+.expediente .dato{overflow-wrap:anywhere}
+dl.glos{grid-template-columns:1fr}
+.sesgos,.errs,.galeria{grid-template-columns:1fr}
+}
+@media(max-width:390px){
+.dform{grid-template-columns:1fr}
+#t-out{grid-template-columns:1fr 1fr !important}
+#lab-stats,#d-stats{grid-template-columns:1fr 1fr !important}
+}
+</style>
+</head>
+<body>
+<div class="topbar"><span class="mira">FRANCO<b>TIRADOR</b></span><button id="nav-toggle" aria-label="Abrir menú">☰</button></div>
+<div id="mnav"></div>
+<nav class="rail" id="rail">
+  <div class="rail-logo">
+    <div class="mira">FRANCO<b>TIRADOR</b></div>
+    <div class="sub">Manual de campo · v2</div>
+  </div>
+  <a class="item" href="#m00"><span class="num">M-00</span>Portada</a>
+  <a class="item" href="#m0b"><span class="num">M-0B</span>El idioma y los básicos</a>
+  <a class="item" href="#m01"><span class="num">M-01</span>Filosofía</a>
+  <a class="item" href="#m02"><span class="num">M-02</span>Anatomía del mercado</a>
+  <a class="item" href="#m03"><span class="num">M-03</span>Liquidez e instituciones</a>
+  <a class="item" href="#m04"><span class="num">M-04</span>El sistema</a>
+  <a class="item" href="#m05"><span class="num">M-05</span>Riesgo</a>
+  <a class="item" href="#m05b"><span class="num">M-05B</span>El clima del mercado</a>
+  <a class="item" href="#m06"><span class="num">M-06</span>Psicología</a>
+  <a class="item" href="#m07"><span class="num">M-07</span>Anatomía de una operación</a>
+  <a class="item" href="#m08"><span class="num">M-08</span>Laboratorio de escenarios</a>
+  <a class="item" href="#m09"><span class="num">M-09</span>Biblioteca de errores</a>
+  <a class="item" href="#m10"><span class="num">M-10</span>Galería de patrones</a>
+  <a class="item" href="#m10b"><span class="num">M-10B</span>Simulacro guiado</a>
+  <a class="item" href="#m10c"><span class="num">M-10C</span>Campo de tiro</a>
+  <a class="item" href="#m11"><span class="num">M-11</span>Diario</a>
+  <a class="item" href="#m12"><span class="num">M-12</span>Checklist</a>
+  <a class="item" href="#m12b"><span class="num">M-12B</span>El examen</a>
+  <a class="item" href="#m13"><span class="num">M-13</span>Manifiesto y firma</a>
+  <div class="rail-note">Este manual no promete rentabilidad. Promete que sabrás exactamente por qué ganas o por qué pierdes.</div>
+</nav>
+<main>
+
+<!-- ============ M-00 PORTADA ============ -->
+<header class="hero grid-bg" id="m00">
+  <span class="stamp">Documento de disciplina · léelo antes de operar</span>
+  <h1>El mercado<br>no se predice.<br><span class="fx">Se ejecuta.</span></h1>
+  <p class="lead">No estás aquí para adivinar el futuro. Estás aquí para <b>ejecutar una ventaja estadística</b> cientos de veces, con el mismo tamaño, las mismas reglas y el mismo pulso. Este manual te enseña de dónde sale esa ventaja, cómo protegerla y por qué tu peor enemigo aparece cada mañana en el espejo.</p>
+  <div class="abajo">
+    <span class="chip">Unidad de medida: <b>R</b> — nunca dinero</span>
+    <span class="chip">Requisito previo: <b>ninguno</b></span>
+    <span class="chip">Promesas: <b>cero</b></span>
+  </div>
+  <svg class="cross" width="260" height="260" viewBox="0 0 260 260" aria-hidden="true">
+    <circle cx="130" cy="130" r="118" fill="none" stroke="#303A47" stroke-width="1"/>
+    <circle cx="130" cy="130" r="78" fill="none" stroke="#303A47" stroke-width="1"/>
+    <circle cx="130" cy="130" r="30" fill="none" stroke="#FFB021" stroke-width="1" opacity=".7"/>
+    <line x1="130" y1="0" x2="130" y2="96" stroke="#303A47"/><line x1="130" y1="164" x2="130" y2="260" stroke="#303A47"/>
+    <line x1="0" y1="130" x2="96" y2="130" stroke="#303A47"/><line x1="164" y1="130" x2="260" y2="130" stroke="#303A47"/>
+    <line x1="118" y1="130" x2="142" y2="130" stroke="#FFB021" stroke-width="1.5"/>
+    <line x1="130" y1="118" x2="130" y2="142" stroke="#FFB021" stroke-width="1.5"/>
+  </svg>
+</header>
+
+<!-- ============ M-0B IDIOMA ============ -->
+<section class="mod" id="m0b">
+  <div class="mod-head">
+    <div class="kicker">Módulo 0B · Léelo aunque tengas prisa</div>
+    <h2>El idioma y los básicos</h2>
+    <p class="intro">Cinco minutos. Lo justo para que ninguna palabra de este manual te frene. Si algo se te olvida después, vuelve aquí: esta página es tu diccionario.</p>
+  </div>
+  <div class="prosa">
+    <p><b>¿Qué es exactamente "operar"?</b> Comprar o vender un activo esperando que el precio se mueva a tu favor, y cerrar la posición para cobrar (o pagar) la diferencia. En derivados puedes ganar en ambas direcciones: te pones <b>largo</b> si crees que subirá (compras primero, vendes después) o <b>corto</b> si crees que bajará (vendes primero, recompras después). No hace falta "tener" el activo: apuestas por la diferencia de precio.</p>
+    <p><b>¿Qué estás mirando en un gráfico?</b> Velas. Cada vela resume un periodo de tiempo (1 minuto, 15 minutos, 1 hora — la <b>temporalidad</b>): el cuerpo va desde donde abrió hasta donde cerró el precio, y las <b>mechas</b> son los extremos que tocó y no aguantó. Las mechas son huellas de batallas: alguien empujó el precio hasta ahí y alguien más fuerte lo devolvió. Este manual vive de leer esas huellas.</p>
+    <p><b>¿Y qué es eso de "R"?</b> La unidad de medida de todo el manual. R es <b>lo que decides arriesgar en una operación</b> — ni un céntimo más. Si tu operación sale mal, pierdes 1R (tu stop). Si sale bien y cobras el triple de lo que arriesgabas, ganaste +3R. Hablar en R en vez de en dinero tiene un superpoder: hace tus operaciones comparables entre sí, hace tus reglas válidas con 100€ o con 100.000€, y te vacuna contra el vértigo — porque +3R es +3R, tenga tres cifras o cinco. Tradúcelo a tu bolsillo:</p>
+  </div>
+
+  <div class="widget" id="w-trad">
+    <h3>Traductor: de R a tu dinero</h3>
+    <div class="wsub">Pon tu capital real y un riesgo por idea. El manual entero se traduce solo.</div>
+    <div class="ctrl"><label for="t-cap">Tu capital</label><input type="number" id="t-cap" value="100" min="1"><output></output></div>
+    <div class="ctrl"><label for="t-r">Riesgo por idea (% de la cuenta)</label><input type="range" id="t-r" min="0.5" max="5" value="1" step="0.5"><output id="t-r-o">1%</output></div>
+    <div id="t-out" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px;margin-top:16px"></div>
+    <div class="veredicto v-neutro" id="t-nota" style="margin-top:14px"></div>
+  </div>
+
+  <div class="prosa">
+    <p>Y ahora el resto del vocabulario, en tarjetas. No las memorices: cuando aparezcan en el manual ya sabrás dónde volver.</p>
+  </div>
+  <dl class="glos">
+    <div><dt>Stop loss</dt><dd>Orden automática que cierra tu posición si el precio llega a tu punto de invalidación. No es una opción: es lo que convierte una apuesta en una operación. Tu stop define tu R.</dd></div>
+    <div><dt>Take profit / objetivo</dt><dd>El precio donde planeas cobrar. Se decide antes de entrar, cuando aún piensas con sangre fría.</dd></div>
+    <div><dt>Payoff</dt><dd>Cuánto ganas de media cuando ganas, dividido entre cuánto pierdes cuando pierdes. Payoff 3:1 = tus ganadoras valen el triple que tus perdedoras.</dd></div>
+    <div><dt>Esperanza</dt><dd>Lo que produce de media cada operación de tu sistema, en R. Positiva = el tiempo juega contigo. Negativa = el tiempo te cobra. Es LA cifra.</dd></div>
+    <div><dt>Apalancamiento</dt><dd>Dinero prestado por el bróker para abrir posiciones mayores que tu capital. Multiplica el tamaño, no la suerte (C-2.1). A cambio, existe la…</dd></div>
+    <div><dt>Liquidación</dt><dd>El bróker cierra tu posición a la fuerza cuando la pérdida amenaza el dinero que te prestó. Si operas con stop y tamaño correcto, jamás deberías ni acercarte.</dd></div>
+    <div><dt>Drawdown</dt><dd>La caída desde tu máximo de cuenta hasta el valle posterior. La métrica del dolor: dos sistemas con la misma rentabilidad pueden tener drawdowns muy distintos.</dd></div>
+    <div><dt>Liquidez</dt><dd>Órdenes esperando a ser ejecutadas. Donde hay muchas juntas (los stops de la masa) hay un lago — y los lagos atraen a los grandes (M-03).</dd></div>
+    <div><dt>Barrida / stop hunt</dt><dd>Movimiento que perfora un nivel obvio, ejecuta los stops acumulados y se gira. El evento central de este manual.</dd></div>
+    <div><dt>Mecha de absorción</dt><dd>La huella de la barrida: una vela que perfora con la mecha pero cuyo cuerpo cierra de vuelta dentro. Alguien compró/vendió todo el pánico.</dd></div>
+    <div><dt>Break-even (BE)</dt><dd>Mover el stop de una posición ganadora hasta tu precio de entrada: desde ese momento, el peor final posible es empatar.</dd></div>
+    <div><dt>Runner</dt><dd>La porción de posición que dejas correr tras cobrar parciales, con el stop en BE. Tu billete gratis a los movimientos grandes.</dd></div>
+    <div><dt>Setup / idea</dt><dd>Una situación que cumple TODAS las piezas de tu sistema. Varias posiciones correlacionadas de la misma idea cuentan como UNA (C-5.2).</dd></div>
+    <div><dt>Divergencia</dt><dd>El precio hace un nuevo extremo pero el indicador (RSI, MACD) no le acompaña: el movimiento avanza sin fuerza. Se usa como confirmación, nunca como gatillo.</dd></div>
+    <div><dt>Temporalidad (HTF/LTF)</dt><dd>El zoom del gráfico. HTF (1h, 4h) para el contexto y el mapa; LTF (5m, 15m) para el gatillo fino. Cada pieza del sistema vive en su zoom.</dd></div>
+    <div><dt>Fibonacci (retroceso)</dt><dd>Niveles porcentuales (61,8%, 78,6%…) de un movimiento previo donde estadísticamente se agotan los retrocesos. Una regla de dibujo, no magia: sirve para mapear zonas.</dd></div>
+  </dl>
+</section>
+
+<!-- ============ M-01 FILOSOFÍA ============ -->
+<section class="mod" id="m01">
+  <div class="mod-head">
+    <div class="kicker">Módulo 01</div>
+    <h2>Filosofía: eres un casino, no un jugador</h2>
+    <p class="intro">Todo lo demás en este manual se deduce de una sola idea. Si entiendes este módulo de verdad, el resto es ingeniería.</p>
+  </div>
+  <div class="prosa">
+    <p>Un casino no sabe si la próxima tirada de la ruleta será roja o negra. No le importa. Sabe que tiene una ventaja del 2,7% por tirada y que, con miles de tiradas, esa ventaja se convierte en certeza matemática. El casino no predice: <b>cobra una ventaja por repetición</b>.</p>
+    <p>El trader amateur intenta ser el jugador: acertar la próxima tirada. El trader profesional intenta ser el casino: construir una ventaja pequeña y ejecutarla tantas veces que la suerte deje de importar. Toda tu carrera consiste en cruzar de un lado de la mesa al otro.</p>
+    <p>Y aquí viene la consecuencia incómoda: si eres el casino, <b>una operación individual no significa nada</b>. Ni la ganada te hace bueno, ni la perdida te hace malo. Solo la serie completa habla. Por eso este manual jamás te preguntará "¿ganaste hoy?" sino "¿ejecutaste hoy?".</p>
+  </div>
+
+  <div class="concepto">
+    <div class="frase"><span class="n">C-1.1</span><p>Tu rentabilidad no depende de acertar mucho. Depende de la relación entre cuánto aciertas, cuánto cobras cuando aciertas y cuánto pagas cuando fallas.</p></div>
+    <details><summary>El mecanismo</summary><div class="cuerpo">
+      <p>Existen traders rentables que aciertan el 30% de las veces y traders arruinados que aciertan el 70%. ¿Cómo es posible? Porque la tasa de acierto es solo una de las dos patas. La otra es el <b>payoff</b>: cuánto ganas de media cuando ganas, dividido entre cuánto pierdes de media cuando pierdes.</p>
+      <p>Un trader que acierta el 30% pero cobra 5 veces lo que arriesga es una máquina de imprimir. Un trader que acierta el 70% pero pierde 3 veces lo que gana (porque aguanta las pérdidas "hasta que se recuperen") es una máquina de quemar cuentas con muy buena autoestima.</p>
+    </div></details>
+    <details><summary>Las matemáticas</summary><div class="cuerpo">
+      <p>Medimos todo en <b>R</b>: tu riesgo por operación. Si arriesgas 15 unidades y ganas 45, ganaste +3R. Si pierdes tu stop, −1R. La ecuación madre del trading es la <b>esperanza matemática por operación</b>:</p>
+      <div class="formula">Esperanza (en R) = (Acierto × Payoff) − (1 − Acierto)</div>
+      <p>Si sale positiva, cada operación que tomas te acerca al beneficio aunque pierdas la mayoría. Si sale negativa, ningún esfuerzo, disciplina ni intuición te salvará: solo estás eligiendo la velocidad de tu ruina. Y tu rentabilidad total es esa esperanza multiplicada por dos cosas más:</p>
+      <div class="formula">Rentabilidad = Esperanza × Nº de operaciones × Riesgo por operación</div>
+      <p>Tres palancas, y solo tres. Todo sistema de trading del mundo, del scalping al value investing, es una combinación distinta de estas tres palancas.</p>
+    </div></details>
+  </div>
+
+  <div class="widget" id="w-esperanza">
+    <h3>La frontera de la rentabilidad</h3>
+    <div class="wsub">Mueve las dos palancas. Descubre que no existe "un buen ratio" ni "una buena tasa de acierto": existen combinaciones que sobreviven y combinaciones que no.</div>
+    <div class="ctrl"><label for="e-wr">Tasa de acierto</label><input type="range" id="e-wr" min="10" max="90" value="40" step="1"><output id="e-wr-o">40%</output></div>
+    <div class="ctrl"><label for="e-pf">Payoff (ganas X por cada 1)</label><input type="range" id="e-pf" min="3" max="60" value="20" step="1"><output id="e-pf-o">2.0</output></div>
+    <svg id="e-svg" viewBox="0 0 560 240" style="width:100%;margin-top:14px" role="img" aria-label="Curva de equilibrio entre tasa de acierto y payoff, con tu combinación marcada como un punto">
+      <line x1="52" y1="200" x2="540" y2="200" stroke="#303A47"/>
+      <line x1="52" y1="14" x2="52" y2="200" stroke="#303A47"/>
+      <text x="296" y="228" fill="#6B7583" font-size="11" font-family="IBM Plex Mono" text-anchor="middle">tasa de acierto →</text>
+      <text x="16" y="110" fill="#6B7583" font-size="11" font-family="IBM Plex Mono" transform="rotate(-90 16 110)" text-anchor="middle">payoff →</text>
+      <path id="e-curva" d="" fill="none" stroke="#FFB021" stroke-width="1.6" stroke-dasharray="5 4"/>
+      <text id="e-zona-g" x="430" y="60" fill="#4CC38A" font-size="11" font-family="IBM Plex Mono">ZONA RENTABLE</text>
+      <text id="e-zona-p" x="90" y="185" fill="#E5534B" font-size="11" font-family="IBM Plex Mono">ZONA DE RUINA</text>
+      <circle id="e-dot" cx="0" cy="0" r="6" fill="#FFB021" stroke="#0E1116" stroke-width="2"/>
+    </svg>
+    <div class="veredicto v-neutro" id="e-ver"><span class="big">…</span><span id="e-txt"></span></div>
+  </div>
+
+  <div class="expediente">
+    <span class="sello">Expediente real</span>
+    <h4>Un mes entero, radiografiado</h4>
+    <p>Un trader real (el autor de este manual) operó 27 "ideas de mercado" en un mes. Resultado por idea: <span class="dato">8 ganadoras, 19 perdedoras</span>. Tasa de acierto: un mediocre <span class="dato">29,6%</span>. ¿Mes ruinoso? Al contrario: cerró con <span class="dato">+0,9R de media por idea</span>, uno de los mejores meses de su vida. Sus pérdidas medias fueron −1R clavado; sus ganancias medias, <span class="dato">+5,4R</span>.</p>
+    <p>El mismo mes visto con otra lupa: <span class="dato">tres ideas concentraron el 100% del beneficio neto</span>. Las otras 24 se anularon entre sí. Su rentabilidad no vivía en acertar: vivía íntegramente en no amputar los dos o tres trenes buenos del mes.</p>
+    <p class="lec">Perder el 70% de las veces y ser rentable no solo es posible: es un perfil de trader completo y legítimo. Pero exige saber que lo eres, porque su psicología es otra (lo verás en M-06).</p>
+  </div>
+</section>
+
+<!-- ============ M-02 ANATOMÍA DEL MERCADO ============ -->
+<section class="mod alt" id="m02">
+  <div class="mod-head">
+    <div class="kicker">Módulo 02</div>
+    <h2>Anatomía del mercado: qué compras cuando compras</h2>
+    <p class="intro">Empezamos desde cero absoluto. Si ya sabes qué es el libro de órdenes y una liquidación, salta al M-03. Si no, este módulo te va a ahorrar tu primera cuenta.</p>
+  </div>
+  <div class="prosa">
+    <p>El precio de un activo no lo decide nadie. Es simplemente <b>el último cruce entre alguien que quería comprar y alguien que quería vender</b>. Todo el mercado es una cola de gente esperando: los que quieren comprar barato ponen órdenes por debajo del precio, los que quieren vender caro las ponen por encima. Esa cola visible se llama <b>libro de órdenes</b>, y el hueco entre la mejor compra y la mejor venta se llama <b>spread</b>.</p>
+    <p>Cuando "compras a mercado" no aparece bitcoin de la nada: <b>consumes las órdenes de venta de otra persona</b>. Esto importa muchísimo, porque significa que para que alguien grande compre mucho, necesita que mucha gente le venda. Recuerda esta frase: será la llave del M-03.</p>
+  </div>
+
+  <div class="concepto">
+    <div class="frase"><span class="n">C-2.1</span><p>El apalancamiento no multiplica tu suerte ni tu acierto. Solo multiplica tu tamaño — y con él, la velocidad de todo lo que te pase.</p></div>
+    <details><summary>El mecanismo</summary><div class="cuerpo">
+      <p>Con 500 de capital y apalancamiento x50 puedes abrir una posición de 25.000. El bróker te presta el resto y se cobra la garantía de que no puedes perder más de lo que tienes: si el precio va en tu contra lo suficiente como para comerse tu margen, <b>te liquida</b> — cierra tu posición a la fuerza y se acabó.</p>
+      <p>El error del novato es leer "x50" como "gano 50 veces más". La lectura correcta es: "el precio necesita moverse 50 veces menos para hacerme el mismo daño". Un movimiento del 2% en contra, ruido puro en cripto, es el 100% de tu margen a x50.</p>
+    </div></details>
+    <details><summary>Las matemáticas</summary><div class="cuerpo">
+      <p>La pareja que define tu riesgo real no es (capital, apalancamiento). Es (tamaño de posición, distancia al stop):</p>
+      <div class="formula">Pérdida si toca el stop = Tamaño de posición × Distancia al stop en %</div>
+      <p>Ejemplo: posición de 2.000 con stop al 0,75% → pierdes 15, da igual si tu apalancamiento era x10 o x100. El apalancamiento solo determina cuánto capital te bloquea el bróker como garantía. <b>El riesgo lo eliges tú con el tamaño y el stop; el apalancamiento solo lo hace posible.</b> Quien controla esa ecuación puede usar x50 con más seguridad que quien usa x5 sin stop.</p>
+    </div></details>
+  </div>
+
+  <div class="concepto">
+    <div class="frase"><span class="n">C-2.2</span><p>Al otro lado de cada operación tuya hay alguien. Pregúntate siempre quién es y por qué cree lo contrario que tú.</p></div>
+    <details><summary>El mecanismo</summary><div class="cuerpo">
+      <p>El mercado de derivados es un juego de suma cero (negativa, tras comisiones): tu ganancia es exactamente la pérdida de otro. Al otro lado de tu compra puede haber un market maker cubriéndose, un fondo distribuyendo posición, o un chaval con el móvil vendiendo por pánico. Los dos primeros tienen más información, más capital y mejores herramientas que tú. <b>Tu única esperanza sistemática es operar en los momentos en los que el que se equivoca es el tercero</b> — y esos momentos existen, son localizables, y tienen nombre: los verás en el módulo siguiente.</p>
+    </div></details>
+  </div>
+</section>
+
+<!-- ============ M-03 LIQUIDEZ ============ -->
+<section class="mod" id="m03">
+  <div class="mod-head">
+    <div class="kicker">Módulo 03</div>
+    <h2>Liquidez e instituciones: dónde caza el grande</h2>
+    <p class="intro">Aquí vive la ventaja de este manual. No es una conspiración: es fontanería. Quien mueve mucho dinero tiene un problema mecánico, y la solución a su problema deja una huella que tú puedes aprender a leer.</p>
+  </div>
+  <div class="prosa">
+    <p>Recuerda la llave del M-02: para comprar en grande, necesitas que muchos te vendan a la vez. Si un fondo intenta comprar 200 millones "a mercado", su propia compra dispara el precio y acaba pagando carísimo. Necesita encontrar <b>bolsas de contrapartida</b>: lugares del gráfico donde hay muchísimas órdenes concentradas esperando.</p>
+    <p>¿Y dónde hay órdenes concentradas? Donde la masa pone sus stops. Todo el mundo aprende los mismos patrones en los mismos vídeos: doble techo, soporte, línea de tendencia. Y todo el mundo pone el stop en el mismo sitio: <b>justo encima del techo, justo debajo del soporte</b>. Un stop de una posición larga es una orden de venta; miles de stops juntos son un lago de venta esperando. Para el fondo que quiere comprar, ese lago es exactamente lo que necesita.</p>
+    <p>Por eso el precio, una y otra vez, hace lo mismo: <b>perfora el nivel obvio, ejecuta los stops de la masa, y se da la vuelta</b>. No es mala suerte tuya. Es el mecanismo central del mercado moderno. Se llama barrida de liquidez, stop hunt, o caza de stops. Y la huella que deja se llama mecha de absorción.</p>
+  </div>
+
+  <figure class="fig">
+    <svg viewBox="0 0 860 380" role="img" aria-label="Diagrama de un doble techo con la zona de stops encima, el precio barriendo esa zona con una mecha y girando a la baja">
+      <line x1="40" y1="340" x2="830" y2="340" stroke="#303A47"/>
+      <rect x="40" y="78" width="790" height="34" fill="#E5534B" opacity=".10"/>
+      <line x1="40" y1="112" x2="830" y2="112" stroke="#E5534B" stroke-width="1" stroke-dasharray="6 5" opacity=".8"/>
+      <text x="48" y="72" fill="#E5534B" font-size="12" font-family="IBM Plex Mono">LAGO DE LIQUIDEZ: aquí duermen los stops de todos los cortos y las compras de ruptura</text>
+      <g fill="#E5534B" opacity=".75">
+        <circle cx="330" cy="95" r="2.5"/><circle cx="350" cy="88" r="2.5"/><circle cx="368" cy="99" r="2.5"/><circle cx="390" cy="90" r="2.5"/><circle cx="412" cy="97" r="2.5"/><circle cx="434" cy="86" r="2.5"/><circle cx="455" cy="94" r="2.5"/><circle cx="476" cy="89" r="2.5"/><circle cx="498" cy="98" r="2.5"/><circle cx="520" cy="91" r="2.5"/>
+      </g>
+      <path d="M40,300 L95,255 L130,275 L185,150 L225,118 L262,190 L305,240 L355,128 L395,116 L430,205 L470,250 L520,160 L560,120" fill="none" stroke="#98A1AE" stroke-width="2" stroke-linejoin="round"/>
+      <path d="M560,120 L590,70 L610,150 L648,230 L700,290 L760,320" fill="none" stroke="#FFB021" stroke-width="2.4" stroke-linejoin="round"/>
+      <circle cx="225" cy="118" r="4" fill="none" stroke="#98A1AE" stroke-width="1.5"/>
+      <circle cx="395" cy="116" r="4" fill="none" stroke="#98A1AE" stroke-width="1.5"/>
+      <text x="196" y="146" fill="#6B7583" font-size="11" font-family="IBM Plex Mono">techo 1</text>
+      <text x="366" y="144" fill="#6B7583" font-size="11" font-family="IBM Plex Mono">techo 2</text>
+      <line x1="590" y1="70" x2="590" y2="150" stroke="#FFB021" stroke-width="1.4" stroke-dasharray="3 3"/>
+      <text x="600" y="66" fill="#FFB021" font-size="12" font-family="IBM Plex Mono">LA BARRIDA: perfora, ejecuta los stops, y muere</text>
+      <text x="600" y="84" fill="#98A1AE" font-size="11" font-family="IBM Plex Mono">la "ruptura" dura minutos: era combustible, no dirección</text>
+      <path d="M655,238 l-10,-4 m10,4 l-3,-11" stroke="#FFB021" stroke-width="1.6" fill="none"/>
+      <text x="664" y="252" fill="#FFB021" font-size="12" font-family="IBM Plex Mono">tu entrada: tras la reintegración</text>
+      <text x="664" y="268" fill="#6B7583" font-size="11" font-family="IBM Plex Mono">con el stop diminuto, encima de la mecha</text>
+    </svg>
+    <figcaption><b>Fig. 3.1 — El doble techo como cebo.</b> La figura de manual no es la operación: es el mecanismo que fabrica los stops. El profesional no vende el techo 2 ni compra la ruptura — espera a que la barrida consuma a ambos y entra en dirección contraria, con la invalidación pegada al extremo de la mecha.</figcaption>
+  </figure>
+
+  <figure class="fig">
+    <svg viewBox="0 0 860 340" role="img" aria-label="Comparación entre una ruptura real, que cierra fuera del nivel y continúa, y una trampa, que perfora con mecha y regresa dentro del rango">
+      <text x="215" y="28" fill="#4CC38A" font-size="13" font-family="IBM Plex Mono" text-anchor="middle">RUPTURA REAL</text>
+      <line x1="60" y1="150" x2="380" y2="150" stroke="#303A47" stroke-dasharray="6 5"/>
+      <g stroke-width="0"><rect x="90" y="185" width="16" height="50" fill="#4CC38A"/><rect x="120" y="165" width="16" height="45" fill="#E5534B"/><rect x="150" y="160" width="16" height="52" fill="#4CC38A"/><rect x="180" y="140" width="16" height="46" fill="#4CC38A"/><rect x="210" y="108" width="16" height="52" fill="#4CC38A"/><rect x="240" y="118" width="16" height="26" fill="#E5534B"/><rect x="270" y="80" width="16" height="52" fill="#4CC38A"/><rect x="300" y="52" width="16" height="42" fill="#4CC38A"/></g>
+      <line x1="218" y1="96" x2="218" y2="108" stroke="#4CC38A" stroke-width="2"/><line x1="278" y1="66" x2="278" y2="80" stroke="#4CC38A" stroke-width="2"/>
+      <text x="215" y="290" fill="#98A1AE" font-size="11.5" font-family="IBM Plex Mono" text-anchor="middle">cuerpos enteros cierran FUERA del nivel</text>
+      <text x="215" y="308" fill="#6B7583" font-size="11.5" font-family="IBM Plex Mono" text-anchor="middle">el precio acepta el nuevo territorio y construye encima</text>
+      <text x="645" y="28" fill="#E5534B" font-size="13" font-family="IBM Plex Mono" text-anchor="middle">TRAMPA (BARRIDA)</text>
+      <line x1="490" y1="150" x2="810" y2="150" stroke="#303A47" stroke-dasharray="6 5"/>
+      <g><rect x="520" y="185" width="16" height="50" fill="#4CC38A"/><rect x="550" y="168" width="16" height="42" fill="#4CC38A"/><rect x="580" y="158" width="16" height="40" fill="#4CC38A"/><rect x="610" y="152" width="16" height="40" fill="#4CC38A"/><rect x="640" y="158" width="16" height="46" fill="#E5534B"/><rect x="670" y="196" width="16" height="42" fill="#E5534B"/><rect x="700" y="226" width="16" height="40" fill="#E5534B"/></g>
+      <line x1="648" y1="92" x2="648" y2="158" stroke="#E5534B" stroke-width="2"/>
+      <rect x="608" y="92" width="80" height="20" fill="#FFB021" opacity=".12"/>
+      <text x="648" y="82" fill="#FFB021" font-size="11.5" font-family="IBM Plex Mono" text-anchor="middle">mecha de absorción</text>
+      <text x="645" y="290" fill="#98A1AE" font-size="11.5" font-family="IBM Plex Mono" text-anchor="middle">perfora con MECHA, el cuerpo cierra DENTRO</text>
+      <text x="645" y="308" fill="#6B7583" font-size="11.5" font-family="IBM Plex Mono" text-anchor="middle">el territorio nuevo fue rechazado: alguien absorbió todo</text>
+    </svg>
+    <figcaption><b>Fig. 3.2 — El detalle que separa ambos mundos.</b> No es si el precio cruza el nivel: siempre lo cruza. Es <b>dónde cierra la vela</b>. Cierre fuera con cuerpo = aceptación. Mecha larga que regresa = absorción: la ruptura fue comprada/vendida entera por alguien con más dinero que todos los rupturistas juntos.</figcaption>
+  </figure>
+
+  <div class="concepto">
+    <div class="frase"><span class="n">C-3.1</span><p>No operes el patrón. Opera la trampa que el mercado construye con el patrón.</p></div>
+    <details><summary>El mecanismo</summary><div class="cuerpo">
+      <p>El patrón de libro (doble techo, soporte, canal) es información pública y gratuita: por definición, no puede ser una ventaja. Lo que sí es una ventaja es entender su <b>segunda derivada</b>: dónde coloca sus órdenes la gente que opera el patrón, y qué pasará cuando esas órdenes se ejecuten de golpe. Tú no compites contra el patrón; te posicionas detrás del que lo caza.</p>
+      <p>Consecuencia práctica: llegas <b>tarde a propósito</b>. Nunca eres el primero en entrar. Esperas a que la trampa se cierre (barrida + reintegración) y entras cuando la masa ya pagó el peaje. Tu recompensa por la paciencia: un stop diminuto (justo tras la mecha) y un recorrido enorme (todo el movimiento real que la institución vino a buscar).</p>
+    </div></details>
+    <details><summary>Las matemáticas</summary><div class="cuerpo">
+      <p>Aquí nace el perfil 30/5 que viste en el M-01. Entrar tras la barrida te da stops del 0,5-1% frente a objetivos del 3-6%: payoffs de 4:1 a 8:1 estructurales, no forzados. El precio a pagar es que las barridas engañan: a veces hay dos barridas antes del giro real, y tu primer intento salta. Por eso este estilo <b>falla a menudo y cobra fuerte</b> — y por eso su gestión del riesgo (M-05) y su psicología (M-06) no son opcionales: son el sistema.</p>
+    </div></details>
+  </div>
+</section>
+
+<!-- ============ M-04 SISTEMA ============ -->
+<section class="mod alt" id="m04">
+  <div class="mod-head">
+    <div class="kicker">Módulo 04</div>
+    <h2>El sistema: cuatro piezas o ningún disparo</h2>
+    <p class="intro">Un sistema no es una opinión sobre el mercado. Es una máquina de decisiones con piezas definidas. Aquí tienes la plantilla universal, y debajo, cómo la rellena el estilo francotirador. Si tu estilo es otro, la plantilla te sirve igual: lo que no puede faltar es ninguna pieza.</p>
+  </div>
+
+  <figure class="fig">
+    <svg viewBox="0 0 860 200" role="img" aria-label="Diagrama de flujo de las cuatro piezas del sistema: contexto, zona, gatillo y confirmación, que desembocan en ejecutar o no operar">
+      <g font-family="IBM Plex Mono">
+      <rect x="20" y="40" width="180" height="86" rx="5" fill="#1C222B" stroke="#303A47"/>
+      <text x="110" y="68" fill="#FFB021" font-size="12" text-anchor="middle">1 · CONTEXTO</text>
+      <text x="110" y="90" fill="#98A1AE" font-size="11" text-anchor="middle">¿dónde estoy?</text>
+      <text x="110" y="107" fill="#6B7583" font-size="10.5" text-anchor="middle">mapa mayor · 1h/4h</text>
+      <rect x="235" y="40" width="180" height="86" rx="5" fill="#1C222B" stroke="#303A47"/>
+      <text x="325" y="68" fill="#FFB021" font-size="12" text-anchor="middle">2 · ZONA</text>
+      <text x="325" y="90" fill="#98A1AE" font-size="11" text-anchor="middle">¿dónde tiene sentido?</text>
+      <text x="325" y="107" fill="#6B7583" font-size="10.5" text-anchor="middle">lagos de stops · fibos</text>
+      <rect x="450" y="40" width="180" height="86" rx="5" fill="#1C222B" stroke="#303A47"/>
+      <text x="540" y="68" fill="#FFB021" font-size="12" text-anchor="middle">3 · GATILLO</text>
+      <text x="540" y="90" fill="#98A1AE" font-size="11" text-anchor="middle">¿qué dispara?</text>
+      <text x="540" y="107" fill="#6B7583" font-size="10.5" text-anchor="middle">barrida + reintegro · 5/15m</text>
+      <rect x="665" y="40" width="180" height="86" rx="5" fill="#1C222B" stroke="#303A47"/>
+      <text x="755" y="68" fill="#FFB021" font-size="12" text-anchor="middle">4 · CONFIRMACIÓN</text>
+      <text x="755" y="90" fill="#98A1AE" font-size="11" text-anchor="middle">¿qué lo valida?</text>
+      <text x="755" y="107" fill="#6B7583" font-size="10.5" text-anchor="middle">divergencia · agotamiento</text>
+      <line x1="200" y1="83" x2="235" y2="83" stroke="#FFB021" stroke-width="1.5"/>
+      <line x1="415" y1="83" x2="450" y2="83" stroke="#FFB021" stroke-width="1.5"/>
+      <line x1="630" y1="83" x2="665" y2="83" stroke="#FFB021" stroke-width="1.5"/>
+      <text x="430" y="170" fill="#E9E6DD" font-size="12.5" text-anchor="middle">Falta UNA pieza → no existe la operación. No es "casi": es NO.</text>
+      </g>
+    </svg>
+    <figcaption><b>Fig. 4.1 — La secuencia inviolable.</b> Cada pieza filtra a la anterior. El contexto te dice hacia dónde mirar, la zona te dice dónde esperar, el gatillo te dice cuándo, la confirmación te da permiso. El 90% de las malas operaciones son operaciones a las que les faltaba una pieza y "parecía suficiente".</figcaption>
+  </figure>
+
+  <div class="concepto">
+    <div class="frase"><span class="n">C-4.1</span><p>El sistema decide, tú ejecutas. El día que "sientas" que puedes saltarte una pieza, ese día vuelves a ser el jugador y dejas de ser el casino.</p></div>
+    <details><summary>El mecanismo</summary><div class="cuerpo">
+      <p>La función real de un sistema no es acertar más: es <b>hacer tus operaciones comparables entre sí</b>. Si cada trade sale de criterios distintos, tu estadística no mide nada y jamás sabrás si tienes ventaja. Cien operaciones del mismo sistema son un experimento; cien operaciones "según lo vea" son cien anécdotas.</p>
+      <p>Por eso los días sin señal son victorias, no días perdidos. El casino no baja a la calle a obligar a la gente a jugar: espera a que el jugador entre. Tu equivalente es la silla vacía: <b>no operar cuando no hay pieza completa es ejecutar el sistema</b>, exactamente igual que apretar el botón cuando la hay.</p>
+    </div></details>
+    <details><summary>Las matemáticas</summary><div class="cuerpo">
+      <p>Tu intuición te dirá "si opero más, gano más". Formalmente: Rentabilidad = Esperanza × Frecuencia. Cierto — <b>si la esperanza no cae</b>. Pero cada trade extra que añades es, por construcción, peor que los que ya tomabas (si fuera mejor, ya lo estarías tomando). La frecuencia sube linealmente; la calidad marginal cae en picado, y con ella la esperanza media. Existe un punto óptimo de frecuencia y casi siempre está mucho más abajo de lo que apetece. La única forma de encontrarlo es medir: etiqueta cada trade por calidad (A/B/C) y calcula la esperanza de cada etiqueta por separado. Los C suelen salir negativos. Deja de operarlos y habrás subido tu rentabilidad sin mejorar nada más.</p>
+    </div></details>
+  </div>
+</section>
+
+<!-- ============ M-05 RIESGO ============ -->
+<section class="mod" id="m05">
+  <div class="mod-head">
+    <div class="kicker">Módulo 05</div>
+    <h2>Riesgo: el único módulo que no negocia</h2>
+    <p class="intro">Puedes tener un análisis mediocre y sobrevivir años. Puedes tener el mejor análisis del mundo y morir en una semana. La diferencia es este módulo. Aquí se mide todo en R y en porcentaje de cuenta — nunca en dinero, nunca en sensaciones.</p>
+  </div>
+
+  <div class="concepto">
+    <div class="frase"><span class="n">C-5.1</span><p>Primero eliges cuánto puedes perder. Después, y solo después, el mercado te dice qué tamaño puedes abrir.</p></div>
+    <details><summary>El mecanismo</summary><div class="cuerpo">
+      <p>El amateur decide el tamaño ("meto 1.000") y descubre su riesgo cuando ya duele. El profesional lo hace al revés: fija su R (por ejemplo, el 1-2% de la cuenta), mira dónde está la invalidación técnica de la idea, y deja que la fórmula le escupa el tamaño. El tamaño es una <b>consecuencia</b>, jamás una decisión emocional. Si el stop necesita estar lejos, la posición sale pequeña. Si el gatillo te da un stop quirúrgico (la gracia de operar barridas), la posición sale grande con el mismo riesgo.</p>
+    </div></details>
+    <details><summary>Las matemáticas</summary><div class="cuerpo">
+      <div class="formula">Tamaño de posición = R en dinero ÷ Distancia al stop (en %)</div>
+      <p>Riesgo del 1% sobre 1.000 → R = 10. Stop al 0,8% → tamaño = 10 ÷ 0,008 = 1.250. Nota lo que acaba de pasar: la posición es mayor que la cuenta (ahí entra el apalancamiento como herramienta), y sin embargo el riesgo real sigue siendo 10. El apalancamiento al servicio del stop, nunca al revés.</p>
+    </div></details>
+  </div>
+
+  <div class="widget" id="w-calc">
+    <h3>Calculadora de tamaño</h3>
+    <div class="wsub">La única cuenta que harás antes de cada operación. Cámbiale los números y mira qué manda sobre qué.</div>
+    <div class="ctrl"><label for="c-cap">Capital</label><input type="number" id="c-cap" value="1000" min="1"><output></output></div>
+    <div class="ctrl"><label for="c-rpct">Riesgo por idea (%)</label><input type="range" id="c-rpct" min="0.25" max="5" value="1.5" step="0.25"><output id="c-rpct-o">1.5%</output></div>
+    <div class="ctrl"><label for="c-stop">Distancia al stop (%)</label><input type="range" id="c-stop" min="0.2" max="5" value="0.8" step="0.1"><output id="c-stop-o">0.8%</output></div>
+    <div class="veredicto v-neutro" id="c-out"></div>
+  </div>
+
+  <div class="concepto">
+    <div class="frase"><span class="n">C-5.2</span><p>Activos correlacionados abiertos a la vez no son varias operaciones. Son una sola idea con el riesgo multiplicado en secreto.</p></div>
+    <details><summary>El mecanismo</summary><div class="cuerpo">
+      <p>Es la trampa más cara del trading multi-activo. Abres tres monedas con 1R cada una y tu cerebro contabiliza "tres tiros independientes". Pero si las tres bailan al son del mismo líder (en cripto, casi todo baila al son de BTC), un solo giro del líder ejecuta los tres stops <b>en el mismo minuto</b>. No hiciste tres operaciones de 1R: hiciste una de 3R sin enterarte. La solución no es dejar de operar varios activos: es medir el riesgo <b>por idea de mercado</b>, no por posición, y repartir tu R entre las patas de la idea.</p>
+    </div></details>
+  </div>
+
+  <figure class="fig">
+    <svg viewBox="0 0 860 300" role="img" aria-label="Tres gráficos de precio de activos distintos moviéndose de forma casi idéntica, con sus tres stops ejecutados en el mismo instante">
+      <g font-family="IBM Plex Mono">
+      <text x="30" y="30" fill="#98A1AE" font-size="12">ACTIVO LÍDER</text>
+      <path d="M30,80 L110,64 L190,74 L270,52 L350,60 L430,40 L510,96 L590,116" fill="none" stroke="#FFB021" stroke-width="2"/>
+      <text x="30" y="150" fill="#98A1AE" font-size="12">SATÉLITE A</text>
+      <path d="M30,200 L110,182 L190,194 L270,168 L350,178 L430,154 L510,222 L590,244" fill="none" stroke="#98A1AE" stroke-width="2"/>
+      <text x="30" y="272" fill="#98A1AE" font-size="12" opacity=".8">SATÉLITE B</text>
+      <path d="M30,296 L110,282 L190,290 L270,270 L350,278 L430,258 L510,318 L590,338" fill="none" stroke="#6B7583" stroke-width="2" transform="translate(0,-42)"/>
+      <line x1="472" y1="20" x2="472" y2="290" stroke="#E5534B" stroke-width="1.4" stroke-dasharray="4 4"/>
+      <text x="482" y="34" fill="#E5534B" font-size="12">el líder gira →</text>
+      <circle cx="510" cy="96" r="5" fill="#E5534B"/><circle cx="510" cy="222" r="5" fill="#E5534B"/><circle cx="510" cy="276" r="5" fill="#E5534B"/>
+      <text x="620" y="92" fill="#E5534B" font-size="12">stop A ejecutado</text>
+      <text x="620" y="218" fill="#E5534B" font-size="12">stop B ejecutado</text>
+      <text x="620" y="272" fill="#E5534B" font-size="12">stop C ejecutado</text>
+      <text x="620" y="120" fill="#6B7583" font-size="11">mismo minuto,</text>
+      <text x="620" y="136" fill="#6B7583" font-size="11">misma causa</text>
+      </g>
+    </svg>
+    <figcaption><b>Fig. 5.1 — La ilusión de diversificación.</b> Tres gráficos, un solo movimiento. Diversificar entre activos correlacionados no reduce el riesgo: lo disfraza. La regla operativa: <b>reparte 1R total entre todas las patas de una misma idea</b>, o elige solo la pata más limpia y dale el R entero.</figcaption>
+  </figure>
+
+  <div class="widget" id="w-rachas">
+    <h3>Las rachas que TE VAN a pasar</h3>
+    <div class="wsub">Elige la tasa de acierto de un sistema y mira qué rachas de pérdidas consecutivas son estadísticamente normales en 100 operaciones. Spoiler: más largas de lo que tu estómago cree.</div>
+    <div class="ctrl"><label for="r-wr">Tasa de acierto del sistema</label><input type="range" id="r-wr" min="20" max="75" value="40" step="5"><output id="r-wr-o">40%</output></div>
+    <table class="tbl"><thead><tr><th>Racha de pérdidas seguidas</th><th>Probabilidad de sufrirla al menos una vez en 100 trades</th></tr></thead>
+    <tbody id="r-body"></tbody></table>
+    <div class="veredicto v-neutro" id="r-ver" style="margin-top:16px"></div>
+  </div>
+
+  <div class="expediente">
+    <span class="sello">Expediente real</span>
+    <h4>La racha de cinco</h4>
+    <p>Mismo mes del expediente del M-01. Entre el día 9 y el día 15, el trader encadenó <span class="dato">5 ideas perdedoras consecutivas</span> y un drawdown del <span class="dato">−15% de la cuenta</span>. Con su tasa de acierto (~30%), la probabilidad de una racha así en cualquier ventana de 5 ideas era del <span class="dato">17%</span> — o sea, garantizada varias veces al año. No cambió nada, no subió el tamaño, no buscó revancha. Dos semanas después el mes cerraba en positivo fuerte.</p>
+    <p class="lec">Una racha dentro de lo estadísticamente normal no es información. Reaccionar a ella (subir tamaño, cambiar de sistema, vengarse) sí lo es: es información de que vas a devolver todo lo ganado.</p>
+  </div>
+
+  <div class="concepto">
+    <div class="frase"><span class="n">C-5.3</span><p>Reglas de hierro: no promediar jamás una pérdida, no mover jamás un stop en contra, y un límite diario de pérdida que apaga la pantalla.</p></div>
+    <details><summary>El mecanismo</summary><div class="cuerpo">
+      <p><b>Promediar una pérdida</b> es añadir tamaño a una idea que el mercado está invalidando: conviertes 1R en 2R, 4R, 8R por puro orgullo. Es la causa de muerte número uno de cuentas. <b>Mover el stop</b> es lo mismo con otro disfraz: renegociar la pérdida en vivo. Y el <b>límite diario</b> (típicamente 2 ideas perdidas o −2R/−3R en el día) existe porque tras dos pérdidas tu química cerebral ya no es la de la mañana: la tercera decisión del día rojo no la toma el trader, la toma el mono herido. Estas tres reglas no se cumplen por fuerza de voluntad — se cumplen porque las conviertes en mecánicas: alarmas, bloqueos, o software que te quita el botón (para eso nace la app que acompaña a este manual).</p>
+    </div></details>
+  </div>
+</section>
+
+<!-- ============ M-05B CLIMA ============ -->
+<section class="mod alt" id="m05b">
+  <div class="mod-head">
+    <div class="kicker">Módulo 05B</div>
+    <h2>El clima del mercado: cuándo tu ventaja se apaga</h2>
+    <p class="intro">Todo edge es condicional. El tuyo — comprar la trampa tras la barrida — funciona porque en condiciones normales el mercado respira: barre, gira, respeta estructuras. Pero hay días en los que el campo de tiro entero está cerrado, y salir a cazar en ellos es regalar R haciendo todo "bien". Saber leer el clima antes de mirar ningún setup es la diferencia entre un sistema y una superstición.</p>
+  </div>
+  <div class="climas">
+    <div class="clima"><h4 style="color:var(--baja)">El cuchillo (tendencia violenta)</h4><div class="rec">Velas enormes en una sola dirección, sin mechas de rechazo, retrocesos que no llegan ni al 38% del Fibonacci, y cada "soporte evidente" atravesado como papel.</div><div class="proto">Las barridas NO giran en un cuchillo: son continuación. Tu sistema de reversión se apaga. O te quedas fuera, o solo operas a favor de la tendencia esperando el retroceso — jamás intentes cazar el suelo/techo de un cuchillo. Primera mecha de absorción real + estructura rota (CHoCH): entonces reabre el campo.</div></div>
+    <div class="clima"><h4 style="color:var(--baja)">La tormenta (noticias de alto impacto)</h4><div class="rec">Datos macro (tipos de interés, inflación, empleo), comparecencias de bancos centrales, decisiones regulatorias. Se saben con antelación: hay calendario económico gratis.</div><div class="proto">30 minutos antes y después: pantalla plana. El precio en tormenta barre AMBOS lados en segundos, ejecuta stops sin dejar entrada y no respeta ninguna estructura. Ninguna divergencia significa nada dentro de la tormenta. Revisar el calendario es parte de la checklist pre-sesión — ya está ahí.</div></div>
+    <div class="clima"><h4 style="color:var(--sombra)">El desierto (liquidez muerta)</h4><div class="rec">Madrugadas, festivos, fines de semana en cripto, horas de solape muerto entre sesiones. Volumen mínimo, velas pequeñas y erráticas, spreads más anchos.</div><div class="proto">Sin institución no hay barrida institucional: las mechas del desierto son ruido de algoritmos aburridos, no absorción. Falsos positivos en cadena. Tu franja horaria muerta es medible en el diario (el Expediente de la madrugada del M-06 nació exactamente así) — encuéntrala y conviértela en horario prohibido mecánico.</div></div>
+    <div class="clima"><h4 style="color:var(--alza)">El coto de caza (rango sano)</h4><div class="rec">Estructura clara en 1h/4h, niveles respetados varias veces, volumen presente, velas con mechas de rechazo en los extremos, retrocesos que respiran hasta zonas Fibonacci.</div><div class="proto">Este es TU clima: el mercado respirando entre niveles con memoria, fabricando lagos y drenándolos. Aquí las 4 piezas rinden su esperanza completa. La disciplina del clima consiste en concentrar tus balas aquí — y aceptar que el coto no abre todos los días.</div></div>
+  </div>
+
+  <figure class="fig" style="margin-top:30px">
+    <svg viewBox="0 0 860 300" role="img" aria-label="Comparación entre una barrida que gira dentro de un rango sano y la misma mecha que fracasa dentro de una tendencia violenta">
+      <g font-family="IBM Plex Mono">
+      <text x="215" y="26" fill="#4CC38A" font-size="12.5" text-anchor="middle">EN EL COTO: la mecha gira</text>
+      <line x1="40" y1="200" x2="390" y2="200" stroke="#303A47" stroke-dasharray="6 5"/>
+      <path d="M45,110 L85,150 L120,130 L160,175 L195,160 L225,235 L250,190 L285,150 L325,115 L370,85" fill="none" stroke="#98A1AE" stroke-width="2"/>
+      <line x1="225" y1="235" x2="225" y2="200" stroke="#FFB021" stroke-width="2.4"/>
+      <text x="225" y="258" fill="#FFB021" font-size="10.5" text-anchor="middle">barrida sobre nivel con memoria</text>
+      <text x="215" y="285" fill="#6B7583" font-size="10.5" text-anchor="middle">retrocesos que respiran · mechas de rechazo · volumen vivo</text>
+      <text x="645" y="26" fill="#E5534B" font-size="12.5" text-anchor="middle">EN EL CUCHILLO: la mecha miente</text>
+      <line x1="470" y1="130" x2="820" y2="130" stroke="#303A47" stroke-dasharray="6 5"/>
+      <path d="M475,40 L515,75 L545,68 L580,110 L615,150 L645,128 L672,122 L700,180 L740,230 L790,275" fill="none" stroke="#98A1AE" stroke-width="2"/>
+      <line x1="645" y1="150" x2="645" y2="128" stroke="#FFB021" stroke-width="2.2"/>
+      <circle cx="672" cy="122" r="4" fill="#E5534B"/>
+      <text x="700" y="105" fill="#E5534B" font-size="10.5">la "absorción" era una pausa:</text>
+      <text x="700" y="120" fill="#E5534B" font-size="10.5">el cuchillo sigue cayendo</text>
+      <text x="645" y="285" fill="#6B7583" font-size="10.5" text-anchor="middle">sin retrocesos reales · cuerpos llenos · cada soporte atravesado</text>
+      </g>
+    </svg>
+    <figcaption><b>Fig. 5B.1 — La misma mecha, dos climas, dos destinos.</b> El patrón no cambia: cambia el contexto que lo rodea. Antes de preguntar "¿hay setup?", pregunta "¿qué clima hace?". Si la respuesta es cuchillo, tormenta o desierto, no existe el setup — existe el cebo.</figcaption>
+  </figure>
+
+  <div class="concepto">
+    <div class="frase"><span class="n">C-5B.1</span><p>El clima se diagnostica antes de la sesión, no durante la tentación. Y cuando dudes del clima, el clima es malo.</p></div>
+    <details><summary>El mecanismo</summary><div class="cuerpo">
+      <p>Diagnosticar el clima con una posición en la cabeza es imposible: el deseo redefine cualquier cuchillo como "rango a punto de girar". Por eso el diagnóstico va en la pre-sesión, en frío, con tres preguntas: ¿el mapa 1h/4h muestra niveles respetados o atravesados? ¿hay noticias de alto impacto hoy y a qué hora? ¿estoy en horario de liquidez viva? Tres respuestas buenas = coto abierto. Una mala = esa parte del día no existe para ti. Y la regla de desempate es asimétrica a propósito: el coste de no operar un día bueno es pequeño (tu sistema da señales cada semana); el coste de operar un día malo es −1R multiplicado por todos los falsos positivos que el mal clima fabrica en serie.</p>
+    </div></details>
+  </div>
+</section>
+
+<!-- ============ M-06 PSICOLOGÍA ============ -->
+<section class="mod alt" id="m06">
+  <div class="mod-head">
+    <div class="kicker">Módulo 06</div>
+    <h2>Psicología: conoce a tu saboteador</h2>
+    <p class="intro">Tu cerebro fue diseñado para sobrevivir en la sabana, no para ejecutar esperanza matemática. Cada sesgo de esta lista te va a visitar — la cuestión no es evitarlos (imposible) sino tener preparada la regla mecánica que los desactiva. Sesgo sin antídoto = factura segura.</p>
+  </div>
+
+  <div class="sesgos">
+    <div class="sesgo"><h4>Resultadismo</h4><p>Juzgar la decisión por el resultado: "cerré todo y luego cayó, luego hice bien". Con muestras de 1, refuerza hábitos que destruyen la esperanza a largo plazo.</p><div class="anti">Juzga cada trade solo con una pregunta: ¿seguí el sistema? Sí = trade bueno, aunque pierda. No = trade malo, aunque gane.</div></div>
+    <div class="sesgo"><h4>Revancha (tilt)</h4><p>Tras una pérdida, la urgencia de "recuperar lo mío" ya. Sube el tamaño, baja la exigencia del setup, y encadena el peor trading del que eres capaz.</p><div class="anti">Límite diario mecánico: 2 ideas perdidas → pantalla apagada un número fijo de horas. Sin excepciones, sin "esta la veo clara".</div></div>
+    <div class="sesgo"><h4>Euforia</h4><p>El gemelo malvado de la revancha. Tras un día grande te sientes elegido, el riesgo "se te queda pequeño" y regalas en tres días lo ganado en uno.</p><div class="anti">Tamaño congelado por norma tras cualquier día de ganancia excepcional. El primer trade del día siguiente, a tamaño normal o no se opera.</div></div>
+    <div class="sesgo"><h4>Miedo a devolver</h4><p>Con la posición en verde, cada tick en contra quema. Cierras a +1R operaciones diseñadas para +5R. Sensación de acierto, esperanza destrozada.</p><div class="anti">Salidas parciales predefinidas ANTES de entrar: asegura una parte, deja correr el resto con stop en el punto de entrada. Ya cobraste: lo que queda es gratis.</div></div>
+    <div class="sesgo"><h4>Síndrome del impostor</h4><p>Tras ganar de verdad: "esto fue suerte, mañana me lo quitan". Genera parálisis o, peor, autosabotaje para confirmar la profecía.</p><div class="anti">El diario. La suerte no repite el mismo proceso 30 veces con esperanza positiva medida. Tus datos son la única opinión sobre ti que cuenta.</div></div>
+    <div class="sesgo"><h4>FOMO</h4><p>El movimiento se va sin ti y entras tarde, sin pieza completa, comprando el techo exacto que el sistema te enseñó a cazar en otros.</p><div class="anti">Reencuadre: un tren que se va no es una pérdida, es un trade de otro sistema. El tuyo genera señales cada semana. Silla vacía y a esperar la tuya.</div></div>
+  </div>
+
+  <div class="expediente" style="margin-top:36px">
+    <span class="sello">Expediente real</span>
+    <h4>La madrugada del día 24</h4>
+    <p>Día 23: dos ideas perdedoras, <span class="dato">−2R en el día</span>. El protocolo decía: pantalla apagada. A las <span class="dato">02:32 y 03:21 de la madrugada</span> siguiente, el trader estaba operando otra vez. Perdió ambas. Auditando el mes completo apareció el patrón: <b>el 100% de sus operaciones entre las 0:00 y las 6:00 fueron perdedoras</b>, y casi todas nacieron después de un día rojo. No era un problema de análisis: a las 3 de la mañana no operaba el francotirador — operaba el insomnio con su cuenta.</p>
+    <p class="lec">Tus fugas no están repartidas al azar: se concentran en horas, estados y contextos concretos. Solo un diario con hora de entrada te las enseña. La regla que nació de este expediente: prohibido operar de 0:00 a 8:00, y el cumplimiento se delega en software, no en fuerza de voluntad.</p>
+  </div>
+
+  <div class="concepto">
+    <div class="frase"><span class="n">C-6.1</span><p>La disciplina no es un rasgo de carácter. Es un sistema de barreras que diseñas en frío para protegerte de ti mismo en caliente.</p></div>
+    <details><summary>El mecanismo</summary><div class="cuerpo">
+      <p>Deja de admirar la fuerza de voluntad: es un recurso que se agota exactamente cuando más lo necesitas (tras pérdidas, tras euforias, de madrugada). Los traders que sobreviven no son los que resisten la tentación — son los que <b>eliminan el momento de la tentación</b>: límites automáticos, alarmas de horario, checklist obligatoria antes del botón, tamaño precalculado. Cada regla de este manual que puedas convertir de "promesa" en "mecanismo", conviértela. Tu yo en caliente te lo va a agradecer, aunque en el momento te odie.</p>
+    </div></details>
+  </div>
+</section>
+
+<!-- ============ M-07 ANATOMÍA DE UNA OPERACIÓN ============ -->
+<section class="mod" id="m07">
+  <div class="mod-head">
+    <div class="kicker">Módulo 07</div>
+    <h2>Anatomía de una operación completa</h2>
+    <p class="intro">Todo lo anterior, comprimido en un solo trade diseccionado de principio a fin. Y su gemelo perdedor — porque la misma decisión correcta produce ambos finales, y necesitas ver los dos para creértelo.</p>
+  </div>
+
+  <figure class="fig">
+    <svg viewBox="0 0 860 430" role="img" aria-label="Línea temporal de una operación ganadora: contexto, barrida, entrada, stop, primera toma parcial y salida final, con los niveles de R marcados">
+      <g font-family="IBM Plex Mono">
+      <line x1="60" y1="60" x2="830" y2="60" stroke="#242C37"/><text x="835" y="64" fill="#6B7583" font-size="10" text-anchor="end"> </text>
+      <line x1="60" y1="130" x2="830" y2="130" stroke="#242C37"/>
+      <line x1="60" y1="200" x2="830" y2="200" stroke="#242C37"/>
+      <line x1="60" y1="270" x2="830" y2="270" stroke="#4CC38A" stroke-dasharray="5 4" opacity=".55"/>
+      <line x1="60" y1="340" x2="830" y2="340" stroke="#E5534B" stroke-dasharray="5 4" opacity=".7"/>
+      <text x="56" y="274" fill="#4CC38A" font-size="10.5" text-anchor="end">+1R</text>
+      <text x="56" y="204" fill="#4CC38A" font-size="10.5" text-anchor="end">+3R</text>
+      <text x="56" y="134" fill="#4CC38A" font-size="10.5" text-anchor="end">+5R</text>
+      <text x="56" y="344" fill="#E5534B" font-size="10.5" text-anchor="end">−1R</text>
+      <text x="56" y="309" fill="#98A1AE" font-size="10.5" text-anchor="end">entrada</text>
+      <line x1="60" y1="305" x2="830" y2="305" stroke="#98A1AE" stroke-width="1" opacity=".5"/>
+      <path d="M70,250 L130,270 L180,255 L240,290 L295,320 L330,372 L352,330 L368,305" fill="none" stroke="#98A1AE" stroke-width="2"/>
+      <path d="M368,305 L420,268 L455,285 L520,225 L560,240 L640,168 L690,185 L780,118" fill="none" stroke="#FFB021" stroke-width="2.4"/>
+      <line x1="330" y1="372" x2="330" y2="305" stroke="#FFB021" stroke-width="1.2" stroke-dasharray="3 3"/>
+      <circle cx="330" cy="372" r="4.5" fill="#0E1116" stroke="#FFB021" stroke-width="2"/>
+      <text x="330" y="398" fill="#FFB021" font-size="11" text-anchor="middle">2. barrida del lago</text>
+      <text x="330" y="413" fill="#6B7583" font-size="10" text-anchor="middle">mecha + reintegro + divergencia</text>
+      <circle cx="368" cy="305" r="5" fill="#FFB021"/>
+      <text x="398" y="330" fill="#E9E6DD" font-size="11">3. entrada</text>
+      <text x="398" y="345" fill="#6B7583" font-size="10">stop tras la mecha: riesgo = 1R</text>
+      <circle cx="520" cy="225" r="5" fill="#4CC38A"/>
+      <text x="520" y="205" fill="#4CC38A" font-size="11" text-anchor="middle">4. parcial: cobras una parte</text>
+      <text x="520" y="190" fill="#6B7583" font-size="10" text-anchor="middle">y el stop del resto sube a la entrada</text>
+      <circle cx="780" cy="118" r="5" fill="#4CC38A"/>
+      <text x="762" y="100" fill="#4CC38A" font-size="11" text-anchor="end">5. el runner corre gratis</text>
+      <text x="762" y="86" fill="#6B7583" font-size="10" text-anchor="end">peor caso desde aquí: salir en tablas</text>
+      <text x="150" y="238" fill="#98A1AE" font-size="11">1. contexto + zona marcada</text>
+      <text x="150" y="253" fill="#6B7583" font-size="10">esperando debajo, sin tocar nada</text>
+      </g>
+    </svg>
+    <figcaption><b>Fig. 7.1 — El trade ganador, paso a paso.</b> Fíjate en lo que NO hay: no hay predicción, no hay "creo que subirá". Hay una trampa esperada, un precio de invalidación conocido antes de entrar, y una gestión de salida pactada de antemano con tu peor sesgo (el miedo a devolver): cobras una parte, y el resto corre con la pérdida ya imposible.</figcaption>
+  </figure>
+
+  <figure class="fig">
+    <svg viewBox="0 0 860 300" role="img" aria-label="La misma operación en su versión perdedora: la barrida tiene una segunda pierna, ejecuta el stop y la pérdida es exactamente una R">
+      <g font-family="IBM Plex Mono">
+      <line x1="60" y1="200" x2="830" y2="200" stroke="#98A1AE" stroke-width="1" opacity=".5"/>
+      <line x1="60" y1="248" x2="830" y2="248" stroke="#E5534B" stroke-dasharray="5 4" opacity=".7"/>
+      <text x="56" y="204" fill="#98A1AE" font-size="10.5" text-anchor="end">entrada</text>
+      <text x="56" y="252" fill="#E5534B" font-size="10.5" text-anchor="end">−1R</text>
+      <path d="M70,150 L140,168 L200,185 L250,225 L280,262 L305,230 L330,200" fill="none" stroke="#98A1AE" stroke-width="2"/>
+      <circle cx="330" cy="200" r="5" fill="#FFB021"/>
+      <text x="330" y="182" fill="#FFB021" font-size="11" text-anchor="middle">misma entrada, mismas piezas</text>
+      <path d="M330,200 L370,212 L400,206 L440,232 L470,248" fill="none" stroke="#FFB021" stroke-width="2.2"/>
+      <circle cx="470" cy="248" r="5" fill="#E5534B"/>
+      <text x="470" y="272" fill="#E5534B" font-size="11" text-anchor="middle">stop ejecutado: −1R exacto</text>
+      <path d="M470,248 L500,278 L540,240 L600,190 L680,120 L790,70" fill="none" stroke="#6B7583" stroke-width="1.6" stroke-dasharray="6 4"/>
+      <text x="640" y="105" fill="#6B7583" font-size="11">a veces el giro real llega en la SEGUNDA barrida</text>
+      <text x="640" y="122" fill="#6B7583" font-size="10.5">por eso existe la reentrada (1 intento, mismas piezas)</text>
+      <text x="640" y="139" fill="#6B7583" font-size="10.5">y por eso el R pequeño te compra ese derecho</text>
+      </g>
+    </svg>
+    <figcaption><b>Fig. 7.2 — El mismo trade, versión perdedora.</b> Idéntica decisión, distinto resultado: eso es el trading. La pérdida fue −1R, conocida y pagada sin drama — el alquiler del negocio. Si el precio deja una segunda mecha de absorción en el siguiente nivel, el sistema permite UNA reentrada con las cuatro piezas de nuevo. Si también salta: la lectura era mala, ese activo se cierra por hoy.</figcaption>
+  </figure>
+
+  <div class="concepto">
+    <div class="frase"><span class="n">C-7.1</span><p>Una operación no termina cuando cierras. Termina cuando la registras: qué planeaste, qué ejecutaste, cuánto llegó a dar y cuánto cobraste.</p></div>
+    <details><summary>El mecanismo</summary><div class="cuerpo">
+      <p>Dos métricas que casi nadie apunta y que lo cambian todo: el <b>MFE</b> (máximo que la operación llegó a ganar antes de cerrarla) y el <b>MAE</b> (máximo que llegó a perder antes de resolverse). El MFE medio de tus ganadoras comparado con lo que realmente cobraste te dice, en frío, cuánto dinero te cuesta tu miedo a devolver. El MAE de tus ganadoras te dice si tus stops están bien puestos o si sobrevives de milagro. Son las dos varas de medir del módulo Laboratorio (M-08) y el corazón del Diario (M-11).</p>
+    </div></details>
+  </div>
+</section>
+
+<!-- ============ M-08 LABORATORIO ============ -->
+<section class="mod alt" id="m08">
+  <div class="mod-head">
+    <div class="kicker">Módulo 08</div>
+    <h2>Laboratorio: mil futuros posibles</h2>
+    <p class="intro">Aquí no hay opiniones. Hay un motor Monte Carlo: le das un perfil de sistema (acierto, payoff, frecuencia, riesgo) y simula cientos de vidas alternativas de esa cuenta, con la misma suerte aleatoria del mercado real. Vas a ver por qué dos traders con el mismo sistema viven meses opuestos — y por qué juzgar un sistema por un mes es como juzgar una moneda por tres tiradas.</p>
+  </div>
+
+  <div class="widget" id="w-lab" style="max-width:1000px">
+    <h3>Simulador de escenarios</h3>
+    <div class="wsub">Perfiles precargados o los tuyos. Cada línea gris es una vida posible de la misma cuenta con el mismo sistema. La ámbar es la mediana; la banda, el 80% central de los destinos.</div>
+    <div class="presets" style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:18px">
+      <button class="pbtn" data-p="30,50,10,15,12">Francotirador (30% · 5:1)</button>
+      <button class="pbtn" data-p="50,20,15,10,12">Clásico (50% · 2:1)</button>
+      <button class="pbtn" data-p="65,8,40,5,12">Scalper (65% · 0.8:1)</button>
+      <button class="pbtn" data-p="45,10,25,20,12">Roto (45% · 1:1)</button>
+      <button class="pbtn" data-p="" id="p-mio">Tus datos medidos</button>
+    </div>
+    <div class="ctrl"><label for="l-wr">Tasa de acierto</label><input type="range" id="l-wr" min="15" max="80" value="30" step="1"><output id="l-wr-o">30%</output></div>
+    <div class="ctrl"><label for="l-pf">Payoff</label><input type="range" id="l-pf" min="3" max="80" value="50" step="1"><output id="l-pf-o">5.0</output></div>
+    <div class="ctrl"><label for="l-n">Ideas por mes</label><input type="range" id="l-n" min="4" max="60" value="10" step="1"><output id="l-n-o">10</output></div>
+    <div class="ctrl"><label for="l-r">Riesgo por idea (% cuenta)</label><input type="range" id="l-r" min="2" max="50" value="15" step="1"><output id="l-r-o">1.5%</output></div>
+    <div class="ctrl"><label for="l-m">Horizonte (meses)</label><input type="range" id="l-m" min="3" max="24" value="12" step="1"><output id="l-m-o">12</output></div>
+    <canvas id="lab-cv" style="width:100%;height:340px;background:var(--tinta);border:1px solid var(--linea);border-radius:4px;margin-top:16px"></canvas>
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-top:10px;flex-wrap:wrap;gap:10px">
+      <span style="font-family:var(--mono);font-size:11px;color:var(--sombra)">escala logarítmica · 300 vidas simuladas · comisiones y slippage NO incluidos (la realidad es algo peor)</span>
+      <button id="l-re" class="pbtn">↻ Volver a tirar los dados</button>
+    </div>
+    <div id="lab-stats" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px;margin-top:18px"></div>
+    <div class="veredicto v-neutro" id="lab-ver" style="margin-top:14px"></div>
+  </div>
+
+  <div class="concepto">
+    <div class="frase"><span class="n">C-8.1</span><p>Un mes bueno no valida un sistema y un mes malo no lo refuta. Con pocas operaciones al mes, el resultado mensual es casi todo ruido.</p></div>
+    <details><summary>El mecanismo</summary><div class="cuerpo">
+      <p>Míralo en el simulador: fija cualquier perfil rentable y observa la banda. En el mismo mes, con el mismo sistema y la misma disciplina, unas vidas ganan fuerte y otras pierden. Nada cambió salvo el orden aleatorio de las mismas cartas. Por eso el trader que cambia de sistema tras un mes rojo está tirando una moneda tres veces, viendo dos cruces, y comprando otra moneda — para siempre.</p>
+      <p>La consecuencia práctica: <b>tu sistema se evalúa por muestras de 100+ operaciones y por si respetaste el proceso</b>, jamás por el saldo de un mes. Hasta acumular esa muestra, opera en tamaño de supervivencia: estás pagando la matrícula de tus propios datos.</p>
+    </div></details>
+    <details><summary>Las matemáticas</summary><div class="cuerpo">
+      <p>El resultado de un mes con T ideas tiene media = T × Esperanza, pero desviación típica proporcional a √T × dispersión por idea. Con perfiles de payoff alto la dispersión por idea es enorme (casi todo son −1R y de pronto un +5R), así que con T pequeño la desviación del mes <b>supera a su media</b>: el signo del mes lo decide la varianza, no tu habilidad. Al crecer T, la media crece linealmente y el ruido solo con la raíz — por eso el largo plazo es el único juez con autoridad.</p>
+    </div></details>
+  </div>
+
+  <div class="concepto">
+    <div class="frase"><span class="n">C-8.2</span><p>La esperanza matemática no entiende de calendario. "Ya gané lo del mes" y "tengo que recuperar lo del mes" son la misma superstición con distinto disfraz.</p></div>
+    <details><summary>El mecanismo</summary><div class="cuerpo">
+      <p>Pregunta clásica: "hice en un día la rentabilidad esperada del mes, ¿paro de operar?". Respuesta del casino: cada señal válida de tu sistema lleva dentro la misma esperanza positiva, le dé igual qué día es o cómo va tu mes. Renunciar a señales A+ por haber "cumplido el cupo" es regalar esperanza — sobre todo en perfiles de payoff alto, donde el beneficio anual vive en unos pocos trenes que <b>no avisan de cuándo pasan</b>. Si no estás en el andén, no hay sistema.</p>
+      <p>Lo que sí manda el día después de un día enorme es el M-06: euforia detectada → tamaño congelado, exigencia de setup intacta, y si notas el pulso raro, un día de descanso <b>por higiene mental, no por contabilidad</b>. Se para para proteger el proceso; nunca para proteger un número del calendario.</p>
+    </div></details>
+  </div>
+
+  <div class="expediente">
+    <span class="sello">Expediente real</span>
+    <h4>El mes que pudo no ser</h4>
+    <p>El mes auditado del M-01 cerró con una esperanza de <span class="dato">+0,9R por idea</span> en 27 ideas. Brillante. Pero al meter ese mismo perfil en este simulador aparece la letra pequeña: con esa dispersión, la variabilidad natural de un mes era de <span class="dato">±17R</span> — más de la mitad del resultado. Traducción: una parte relevante de ese mes concreto fue orden afortunado de las cartas, y el mismo trader, con la misma ejecución, habría firmado meses planos o rojos sin hacer nada peor.</p>
+    <p class="lec">Celebra el proceso, desconfía del número. El simulador existe para que veas la banda completa ANTES de vivirla — y para que cuando te toque la vida gris de abajo, sepas que ya la habías visto aquí.</p>
+  </div>
+</section>
+
+<!-- ============ M-09 BIBLIOTECA DE ERRORES ============ -->
+<section class="mod" id="m09">
+  <div class="mod-head">
+    <div class="kicker">Módulo 09</div>
+    <h2>Biblioteca de errores: el catálogo de la ruina</h2>
+    <p class="intro">Los doce errores que matan cuentas, con su coste típico y la regla que los desactiva. No los leas como curiosidades: cada uno de ellos te va a proponer matrimonio en tu primer año. Vuelve aquí cuando notes el anillo.</p>
+  </div>
+  <div class="errs">
+    <div class="err"><h4>Promediar la pérdida</h4><div class="como">La posición va en contra y añades más "para bajar el precio medio". Conviertes una idea invalidada en una apuesta doble.</div><div class="coste">Coste: de −1R a −5R… o la cuenta entera. El asesino nº 1.</div><div class="regla">Posición en rojo = prohibido añadir. Sin excepciones, sin "esta vez es distinto".</div></div>
+    <div class="err"><h4>Mover el stop en contra</h4><div class="como">El precio se acerca a tu stop y lo alejas "para darle aire". Es promediar con otro disfraz: renegociar la pérdida en vivo.</div><div class="coste">Coste: tu −1R planificado se vuelve −3R sorpresa.</div><div class="regla">El stop solo se mueve en una dirección: a tu favor. Se coloca en frío y se respeta en caliente.</div></div>
+    <div class="err"><h4>Amputar al ganador</h4><div class="como">Cierras a +1R una operación diseñada para +5R "por si se gira". Sensación de acierto, esperanza destrozada (el mes vive de esos trenes).</div><div class="coste">Coste: invisible y enorme — la diferencia entre tu MFE y tu cobro real.</div><div class="regla">Salidas pactadas antes de entrar: parcial + runner con stop en BE. El plan decide, no el pulso.</div></div>
+    <div class="err"><h4>La revancha</h4><div class="como">Tras una pérdida entras otra vez ya, con más tamaño y menos setup, "a recuperar lo mío". El mercado no sabe que le debes algo.</div><div class="coste">Coste: los peores −3R/−5R de tu vida, siempre en racimo.</div><div class="regla">Límite diario mecánico: 2 ideas perdidas → pantalla apagada X horas. Delegado en software si hace falta.</div></div>
+    <div class="err"><h4>Tamaño por euforia</h4><div class="como">Vienes de un día grande y subes el riesgo porque "estás en racha" y "juegas con dinero del mercado". Ese dinero ya era tuyo.</div><div class="coste">Coste: devolver en 3 días lo ganado en 1. Ritual clásico.</div><div class="regla">El tamaño solo cambia por hitos de capital planificados en frío (y con datos), jamás por sensaciones.</div></div>
+    <div class="err"><h4>Operar el patrón obvio</h4><div class="como">Vender el doble techo perfecto, comprar la ruptura limpia. Justo las órdenes que el lago de liquidez necesita para alimentar al grande.</div><div class="coste">Coste: −1R repetido con precisión quirúrgica. Eres el combustible.</div><div class="regla">El patrón no es la operación: es el cebo. Espera la barrida y opera la trampa (M-03).</div></div>
+    <div class="err"><h4>Ignorar la correlación</h4><div class="como">Tres activos hermanos abiertos "para diversificar". Un giro del líder ejecuta los tres stops en el mismo minuto.</div><div class="coste">Coste: creías arriesgar 1R y pagaste 3R. Apalancamiento oculto.</div><div class="regla">El riesgo se mide por idea de mercado: reparte 1R entre las patas o dale todo a la más limpia (C-5.2).</div></div>
+    <div class="err"><h4>Operar sin las 4 piezas</h4><div class="como">"Tiene buena pinta" no es un sistema. Falta el contexto, o la zona, o el gatillo — pero apetece, y aprietas.</div><div class="coste">Coste: además del −1R, corrompe tu estadística: ya no mides tu sistema, mides tu humor.</div><div class="regla">Checklist previa obligatoria (M-12). Falta una casilla = no existe la operación.</div></div>
+    <div class="err"><h4>Sobreoperar</h4><div class="como">Diez ideas al día donde tu sistema da dos a la semana. La frecuencia sube, la calidad marginal se hunde, las comisiones aplauden.</div><div class="coste">Coste: esperanza diluida hasta negativa + agotamiento mental.</div><div class="regla">Etiqueta la calidad (A/B/C) de cada trade y mide la esperanza por etiqueta. Deja de operar los C. Silla vacía.</div></div>
+    <div class="err"><h4>Operar en tu hora maldita</h4><div class="como">Cada trader tiene contextos donde pierde siempre: la madrugada, el aburrimiento del domingo, los diez minutos tras una noticia. Y no lo sabe.</div><div class="coste">Coste: una fuga silenciosa y sistemática, mes tras mes.</div><div class="regla">Registra la hora en el diario. A las 30 operaciones, audita. Encontrada la fuga → horario prohibido mecánico.</div></div>
+    <div class="err"><h4>El "esta vez es distinto"</h4><div class="como">La frase con la que tu cerebro pide permiso para saltarse cualquiera de las reglas anteriores. Suena a análisis; es ansia disfrazada.</div><div class="coste">Coste: es el error raíz — el desbloqueador de todos los demás.</div><div class="regla">Si necesitas justificar una excepción, ya tienes la respuesta: es no. Las excepciones se diseñan en frío o no existen.</div></div>
+    <div class="err"><h4>No registrar</h4><div class="como">Operar sin diario. Sin datos no hay esperanza medida, ni fugas visibles, ni forma de saber si tienes ventaja o suerte. Ceguera voluntaria.</div><div class="coste">Coste: repetir cada error de esta biblioteca para siempre.</div><div class="regla">Ninguna operación está cerrada hasta estar registrada (C-7.1). El M-11 te lo pone a un clic.</div></div>
+  </div>
+</section>
+
+<!-- ============ M-10 GALERÍA ============ -->
+<section class="mod alt" id="m10">
+  <div class="mod-head">
+    <div class="kicker">Módulo 10</div>
+    <h2>Galería de patrones: los arquetipos de la trampa</h2>
+    <p class="intro">Seis esquemas de las trampas que más se repiten. Son mapas, no fotos: el mercado nunca los dibuja idénticos, pero la lógica interna — dónde está el lago, quién queda atrapado, dónde entra el francotirador — es siempre la misma. Tu trabajo: reconocer la lógica bajo el ruido, y alimentar esta galería con capturas reales tuyas.</p>
+  </div>
+  <div class="galeria">
+    <div class="pat"><div class="pt">01 · Barrida de doble techo</div>
+      <svg viewBox="0 0 400 200"><line x1="20" y1="62" x2="380" y2="62" stroke="#E5534B" stroke-dasharray="5 4" opacity=".7"/><path d="M20,160 L60,90 L95,120 L135,68 L165,105 L200,66 L228,40 L245,92 L285,130 L330,158 L375,172" fill="none" stroke="#98A1AE" stroke-width="2"/><line x1="228" y1="40" x2="228" y2="66" stroke="#FFB021" stroke-width="2.4"/><circle cx="245" cy="92" r="4" fill="#FFB021"/><text x="26" y="52" fill="#E5534B" font-size="10" font-family="IBM Plex Mono">lago: stops de cortos + compras de ruptura</text><text x="252" y="96" fill="#FFB021" font-size="10" font-family="IBM Plex Mono">entrada corto</text></svg>
+      <div class="pd">Dos techos "iguales" fabrican el lago encima. La mecha lo drena, el cuerpo cierra dentro → corto con stop sobre la mecha. El espejo exacto (doble suelo) da el largo.</div></div>
+    <div class="pat"><div class="pt">02 · El resorte (barrida de soporte)</div>
+      <svg viewBox="0 0 400 200"><line x1="20" y1="138" x2="380" y2="138" stroke="#E5534B" stroke-dasharray="5 4" opacity=".7"/><path d="M20,60 L55,95 L90,120 L120,135 L150,128 L180,136 L210,130 L235,170 L252,132 L285,100 L325,70 L375,42" fill="none" stroke="#98A1AE" stroke-width="2"/><line x1="235" y1="170" x2="235" y2="138" stroke="#FFB021" stroke-width="2.4"/><circle cx="252" cy="132" r="4" fill="#FFB021"/><text x="26" y="156" fill="#E5534B" font-size="10" font-family="IBM Plex Mono">lago: stops de todos los largos apoyados</text><text x="258" y="126" fill="#FFB021" font-size="10" font-family="IBM Plex Mono">entrada largo</text></svg>
+      <div class="pd">Un soporte tocado muchas veces acumula stops debajo. La perforación con pánico + reintegro inmediato = el resorte: los vendedores del mínimo quedan atrapados y su recompra empuja tu largo.</div></div>
+    <div class="pat"><div class="pt">03 · Falsa ruptura de canal</div>
+      <svg viewBox="0 0 400 200"><line x1="20" y1="50" x2="380" y2="90" stroke="#303A47"/><line x1="20" y1="120" x2="380" y2="160" stroke="#303A47"/><path d="M25,115 L70,62 L110,105 L150,75 L190,120 L230,88 L262,60 L278,108 L315,132 L360,152" fill="none" stroke="#98A1AE" stroke-width="2"/><line x1="262" y1="60" x2="262" y2="80" stroke="#FFB021" stroke-width="2.4"/><circle cx="278" cy="108" r="4" fill="#FFB021"/><text x="70" y="40" fill="#6B7583" font-size="10" font-family="IBM Plex Mono">canal evidente = trampa evidente</text><text x="284" y="112" fill="#FFB021" font-size="10" font-family="IBM Plex Mono">entrada a favor del canal</text></svg>
+      <div class="pd">Cuanto más limpio el canal, más gente compra su ruptura. La escapada que vuelve a entrar al canal deja a todos los rupturistas atrapados: opera el regreso hacia el lado contrario del canal.</div></div>
+    <div class="pat"><div class="pt">04 · Máximos iguales (liquidez fabricada)</div>
+      <svg viewBox="0 0 400 200"><line x1="20" y1="58" x2="380" y2="58" stroke="#E5534B" stroke-dasharray="5 4" opacity=".7"/><path d="M20,155 L58,62 L92,110 L128,60 L162,112 L198,61 L232,118 L268,36 L288,96 L330,140 L372,165" fill="none" stroke="#98A1AE" stroke-width="2"/><line x1="268" y1="36" x2="268" y2="60" stroke="#FFB021" stroke-width="2.4"/><text x="26" y="48" fill="#E5534B" font-size="10" font-family="IBM Plex Mono">3 toques "perfectos": el lago engorda con cada toque</text><circle cx="288" cy="96" r="4" fill="#FFB021"/></svg>
+      <div class="pd">Techos milimétricamente iguales no son casualidad: son un escaparate. Cada toque suma stops arriba. La barrida final es más violenta cuanto más "respetado" parecía el nivel.</div></div>
+    <div class="pat"><div class="pt">05 · Caza de la línea de tendencia</div>
+      <svg viewBox="0 0 400 200"><line x1="20" y1="170" x2="380" y2="60" stroke="#303A47"/><path d="M30,158 L75,120 L108,142 L150,100 L185,122 L225,82 L258,102 L285,135 L302,96 L340,62 L375,38" fill="none" stroke="#98A1AE" stroke-width="2"/><line x1="285" y1="135" x2="285" y2="112" stroke="#FFB021" stroke-width="2.4"/><circle cx="302" cy="96" r="4" fill="#FFB021"/><text x="60" y="185" fill="#6B7583" font-size="10" font-family="IBM Plex Mono">todo el mundo ve la misma línea… y apoya el stop en ella</text></svg>
+      <div class="pd">La línea de tendencia de manual concentra stops justo debajo de cada toque. La perforación que no continúa es la caza; el reintegro con divergencia da la entrada a favor de la tendencia original.</div></div>
+    <div class="pat"><div class="pt">06 · La doble barrida</div>
+      <svg viewBox="0 0 400 200"><line x1="20" y1="130" x2="380" y2="130" stroke="#E5534B" stroke-dasharray="5 4" opacity=".7"/><path d="M20,60 L60,95 L95,125 L125,158 L145,124 L175,118 L205,172 L228,120 L262,92 L305,66 L372,40" fill="none" stroke="#98A1AE" stroke-width="2"/><line x1="125" y1="158" x2="125" y2="130" stroke="#FFB021" stroke-width="2"/><line x1="205" y1="172" x2="205" y2="130" stroke="#FFB021" stroke-width="2.4"/><circle cx="228" cy="120" r="4" fill="#FFB021"/><text x="98" y="188" fill="#6B7583" font-size="10" font-family="IBM Plex Mono">1ª barrida (te saca)   2ª barrida (la buena)</text></svg>
+      <div class="pd">A veces el lago se drena en dos tragos: la primera mecha ejecuta a los stops apretados (quizá el tuyo) y la segunda, más profunda, completa el giro. Por eso existe la reentrada — 1 intento, mismas 4 piezas, jamás por rabia.</div></div>
+  </div>
+  <div class="expediente" style="margin-top:34px">
+    <span class="sello">Tu tarea</span>
+    <h4>Alimenta la galería</h4>
+    <p>Estos esquemas valen poco hasta que los veas en carne real. Protocolo: cada vez que detectes (u operes) uno de estos arquetipos, captura el gráfico y guárdalo nombrado así: <span class="dato">AAAA-MM-DD_activo_patrón_resultado.png</span> (ej.: 2026-08-03_BTC_resorte_+4R). A las 20 capturas tendrás tu propia biblioteca visual — el material de estudio más valioso que existirá para ti, porque estará hecho de TU mercado y TUS ojos. Repásala los días sin señal.</p>
+  </div>
+</section>
+
+<!-- ============ M-10B SIMULACRO ============ -->
+<section class="mod" id="m10b">
+  <div class="mod-head">
+    <div class="kicker">Módulo 10B · Práctica guiada</div>
+    <h2>Simulacro: tu primer análisis, de cero</h2>
+    <p class="intro">Deja de leer: ahora analizas tú. Este es un gráfico sintético (construido para contener una historia completa) y yo soy tu instructor al lado. Vas a hacer el proceso entero en el orden real: mapa grande, niveles, zoom, indicadores con los ojos, Fibonacci y disparo. Tus trazos se quedan dibujados de un paso al siguiente — exactamente como en tu plataforma real.</p>
+  </div>
+
+  <figure class="fig">
+    <svg viewBox="0 0 860 250" role="img" aria-label="Explicación visual de las temporalidades: una sola vela de cuatro horas contiene dieciséis velas de quince minutos con la misma forma total">
+      <g font-family="IBM Plex Mono">
+      <text x="200" y="28" fill="#98A1AE" font-size="12" text-anchor="middle">UNA vela de 4 horas…</text>
+      <line x1="200" y1="52" x2="200" y2="210" stroke="#4CC38A" stroke-width="2"/>
+      <rect x="182" y="88" width="36" height="92" fill="#4CC38A"/>
+      <text x="200" y="238" fill="#6B7583" font-size="10.5" text-anchor="middle">abrió abajo · tocó extremos · cerró arriba</text>
+      <text x="590" y="28" fill="#98A1AE" font-size="12" text-anchor="middle">…son 16 velas de 15 minutos: el MISMO viaje, con lupa</text>
+      <g>
+      <line x1="420" y1="150" x2="420" y2="185" stroke="#E5534B" stroke-width="1.6"/><rect x="415" y="158" width="10" height="20" fill="#E5534B"/>
+      <line x1="440" y1="140" x2="440" y2="200" stroke="#E5534B" stroke-width="1.6"/><rect x="435" y="150" width="10" height="42" fill="#E5534B"/>
+      <line x1="460" y1="165" x2="460" y2="210" stroke="#4CC38A" stroke-width="1.6"/><rect x="455" y="175" width="10" height="26" fill="#4CC38A"/>
+      <line x1="480" y1="150" x2="480" y2="196" stroke="#4CC38A" stroke-width="1.6"/><rect x="475" y="158" width="10" height="30" fill="#4CC38A"/>
+      <line x1="500" y1="155" x2="500" y2="188" stroke="#E5534B" stroke-width="1.6"/><rect x="495" y="160" width="10" height="20" fill="#E5534B"/>
+      <line x1="520" y1="130" x2="520" y2="175" stroke="#4CC38A" stroke-width="1.6"/><rect x="515" y="140" width="10" height="28" fill="#4CC38A"/>
+      <line x1="540" y1="118" x2="540" y2="150" stroke="#4CC38A" stroke-width="1.6"/><rect x="535" y="124" width="10" height="22" fill="#4CC38A"/>
+      <line x1="560" y1="122" x2="560" y2="152" stroke="#E5534B" stroke-width="1.6"/><rect x="555" y="128" width="10" height="18" fill="#E5534B"/>
+      <line x1="580" y1="108" x2="580" y2="140" stroke="#4CC38A" stroke-width="1.6"/><rect x="575" y="115" width="10" height="20" fill="#4CC38A"/>
+      <line x1="600" y1="96" x2="600" y2="128" stroke="#4CC38A" stroke-width="1.6"/><rect x="595" y="102" width="10" height="20" fill="#4CC38A"/>
+      <line x1="620" y1="100" x2="620" y2="126" stroke="#E5534B" stroke-width="1.6"/><rect x="615" y="105" width="10" height="15" fill="#E5534B"/>
+      <line x1="640" y1="88" x2="640" y2="118" stroke="#4CC38A" stroke-width="1.6"/><rect x="635" y="94" width="10" height="18" fill="#4CC38A"/>
+      <line x1="660" y1="76" x2="660" y2="104" stroke="#4CC38A" stroke-width="1.6"/><rect x="655" y="82" width="10" height="16" fill="#4CC38A"/>
+      <line x1="680" y1="70" x2="680" y2="98" stroke="#E5534B" stroke-width="1.6"/><rect x="675" y="76" width="10" height="14" fill="#E5534B"/>
+      <line x1="700" y1="58" x2="700" y2="88" stroke="#4CC38A" stroke-width="1.6"/><rect x="695" y="66" width="10" height="16" fill="#4CC38A"/>
+      <line x1="720" y1="52" x2="720" y2="78" stroke="#4CC38A" stroke-width="1.6"/><rect x="715" y="58" width="10" height="14" fill="#4CC38A"/>
+      </g>
+      <text x="590" y="238" fill="#6B7583" font-size="10.5" text-anchor="middle">dentro hubo caídas, dudas y arreones que la vela grande no enseña</text>
+      </g>
+    </svg>
+    <figcaption><b>Fig. 10B.1 — La escala del tiempo, de una vez y para siempre.</b> Las temporalidades no son "gráficos distintos": son la MISMA película con más o menos fotogramas. Por eso el sistema usa dos zooms: el grande (4h/1d) para leer el territorio sin ruido, y el pequeño (15m/1h) para afinar la entrada. Nunca al revés: quien decide la dirección en 15m está leyendo el ruido.</figcaption>
+  </figure>
+
+  <div class="widget" style="max-width:1000px">
+    <h3>El ejercicio</h3>
+    <div class="sim-pasos" id="sim-pasos"></div>
+    <div class="sim-instr" id="sim-instr"></div>
+    <canvas id="sim-cv" height="470"></canvas>
+    <div class="sim-fb" id="sim-fb"></div>
+    <div class="sim-botones" id="sim-btns"></div>
+  </div>
+
+  <div class="concepto">
+    <div class="frase"><span class="n">C-10B.1</span><p>Confirmación de máximo nivel (opcional): el cambio de carácter. Cuando además de la barrida, el precio rompe la estructura que traía, la vuelta deja de ser hipótesis.</p></div>
+    <details><summary>El mecanismo (CHoCH, para cuando estés listo)</summary><div class="cuerpo">
+      <p>Una tendencia bajista es, por definición, una escalera de máximos y mínimos cada vez más bajos. Mientras esa escalera siga intacta, cualquier rebote es solo un descanso. El <b>cambio de carácter</b> (CHoCH, <em>change of character</em>) ocurre cuando, tras la barrida del mínimo, el precio hace algo que llevaba toda la tendencia sin poder hacer: <b>superar su último máximo bajista</b>. La escalera se ha roto.</p>
+      <p>Es la confirmación más fiable que existe — y la más cara: cuando llega, el precio ya está lejos del mínimo, así que tu stop es mayor y tu payoff menor. Es el intercambio eterno: certeza a cambio de precio. Uso recomendado: no lo necesitas para entrar (la mecha + divergencia ya son tu gatillo), pero sí para <b>quedarte</b> — si tu runner ve aparecer un CHoCH a favor, tiene permiso para aspirar al objetivo completo; si el rebote muere sin romper la escalera, el runner cobra sin discutir.</p>
+    </div></details>
+  </div>
+
+  <figure class="fig">
+    <svg viewBox="0 0 860 280" role="img" aria-label="Esquema del cambio de carácter: escalera bajista de máximos decrecientes, barrida del mínimo y ruptura del último máximo bajista">
+      <g font-family="IBM Plex Mono">
+      <path d="M30,50 L95,115 L140,85 L210,160 L255,125 L325,200 L365,168 L400,238 L428,170 L465,190 L520,120 L600,140 L700,70" fill="none" stroke="#98A1AE" stroke-width="2"/>
+      <line x1="400" y1="238" x2="400" y2="205" stroke="#FFB021" stroke-width="2.4"/>
+      <circle cx="140" cy="85" r="4" fill="none" stroke="#6B7583" stroke-width="1.5"/>
+      <circle cx="255" cy="125" r="4" fill="none" stroke="#6B7583" stroke-width="1.5"/>
+      <circle cx="365" cy="168" r="4" fill="none" stroke="#E5534B" stroke-width="2"/>
+      <text x="120" y="70" fill="#6B7583" font-size="10.5">máx. bajista</text>
+      <text x="235" y="110" fill="#6B7583" font-size="10.5">más bajo</text>
+      <text x="345" y="153" fill="#E5534B" font-size="10.5">el ÚLTIMO</text>
+      <line x1="365" y1="168" x2="560" y2="168" stroke="#E5534B" stroke-dasharray="4 4" opacity=".7"/>
+      <circle cx="520" cy="120" r="5" fill="#4CC38A"/>
+      <text x="530" y="110" fill="#4CC38A" font-size="11">CHoCH: la escalera se rompe</text>
+      <text x="400" y="262" fill="#FFB021" font-size="10.5" text-anchor="middle">barrida del mínimo (tu entrada ya vive aquí)</text>
+      </g>
+    </svg>
+    <figcaption><b>Fig. 10B.2 — El cambio de carácter.</b> La entrada del francotirador ocurre en la mecha; el CHoCH llega después y responde otra pregunta: no "¿entro?", sino "¿cuánto me quedo?". Escalera rota = el runner apunta lejos. Escalera intacta = era solo un rebote, cobra y a casa.</figcaption>
+  </figure>
+</section>
+
+<!-- ============ M-10C CAMPO DE TIRO ============ -->
+<section class="mod alt" id="m10c">
+  <div class="mod-head">
+    <div class="kicker">Módulo 10C · Entrenamiento</div>
+    <h2>Campo de tiro: entrena el ojo</h2>
+    <p class="intro">Distinguir una trampa de una ruptura real en dos segundos no se aprende leyendo: se entrena, como el oído musical — repeticiones y corrección inmediata. Este generador fabrica escenarios sintéticos infinitos y siempre distintos. Mira el gráfico congelado justo después de la vela clave y decide. Ojo: a veces la respuesta correcta es no operar — ese botón también puntúa, porque la silla vacía es parte del sistema.</p>
+  </div>
+  <div class="widget" style="max-width:1000px">
+    <h3>El ejercicio infinito</h3>
+    <div class="tiro-stats" id="tiro-stats"></div>
+    <div class="sim-instr" id="tiro-instr">El precio acaba de interactuar con el nivel marcado y la vela clave ya cerró. Con lo que ves — memoria del nivel, tipo de perforación, dónde cerró el cuerpo — ¿qué acaba de pasar?</div>
+    <canvas id="tiro-cv" height="330"></canvas>
+    <div class="sim-fb" id="tiro-fb"></div>
+    <div class="sim-botones" id="tiro-btns"></div>
+  </div>
+  <div class="concepto">
+    <div class="frase"><span class="n">C-10C.1</span><p>Tu tasa de reconocimiento es una habilidad medible y entrenable — y es previa a cualquier estadística de trading: no puedes ejecutar lo que no ves.</p></div>
+    <details><summary>Cómo entrenar bien aquí</summary><div class="cuerpo">
+      <p>Sesiones cortas y frecuentes (10-15 escenarios) valen más que un atracón. Antes de pulsar, verbaliza el porqué en una frase — "cuerpo cerró dentro tras nivel con dos toques" — porque nombrar el criterio es lo que lo graba. Y vigila tu sesgo de acción: si tu acierto en "trampa" y "ruptura" es alto pero fallas los "no operar", tu ojo está bien y tu dedo está ansioso — ese es exactamente el fallo que en real cuesta dinero. Objetivo razonable antes de fiarte de tu ojo en vivo: 80% sostenido en 50+ escenarios.</p>
+    </div></details>
+  </div>
+</section>
+
+<!-- ============ M-11 DIARIO ============ -->
+<section class="mod" id="m11">
+  <div class="mod-head">
+    <div class="kicker">Módulo 11</div>
+    <h2>Diario: tu única fuente de verdad</h2>
+    <p class="intro">Aquí es donde el manual deja de ser lectura y empieza a ser tuyo. Registra cada operación cerrada (en R, como siempre) y el diario calculará solo tu tasa de acierto, tu payoff y tu esperanza reales. Todo queda guardado en este navegador. Cuando acumules 30-50 registros, vuelve al Laboratorio (M-08) con TUS números — ese día empiezan las decisiones serias.</p>
+  </div>
+  <div class="widget" style="max-width:1000px">
+    <h3>Registrar operación cerrada</h3>
+    <div class="dform">
+      <div><label for="d-fecha">Fecha</label><input type="date" id="d-fecha"></div>
+      <div><label for="d-hora">Hora de entrada</label><input type="time" id="d-hora"></div>
+      <div><label for="d-act">Activo</label><input type="text" id="d-act" placeholder="BTC, oro…"></div>
+      <div><label for="d-dir">Dirección</label><select id="d-dir"><option>Largo</option><option>Corto</option></select></div>
+      <div><label for="d-cal">Calidad del setup</label><select id="d-cal"><option>A · piezas perfectas</option><option>B · aceptable</option><option>C · no debí entrar</option></select></div>
+      <div><label for="d-res">Resultado (en R)</label><input type="number" id="d-res" step="0.1" placeholder="-1 · +3.5 · 0"></div>
+      <div style="grid-column:1/-1"><label for="d-nota">Nota (estado mental, qué viste, qué harías distinto)</label><input type="text" id="d-nota" placeholder="tranquilo · dudé en la entrada · cerré pronto por miedo…"></div>
+    </div>
+    <div style="display:flex;gap:12px;flex-wrap:wrap">
+      <button id="d-add" class="pbtn" style="border-color:var(--trazador);color:var(--trazador)">+ Registrar</button>
+      <button id="d-csv" class="pbtn">Exportar CSV</button>
+      <span id="d-msg" style="font-family:var(--mono);font-size:12px;color:var(--sombra);align-self:center"></span>
+    </div>
+    <div id="d-stats" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin-top:20px"></div>
+    <div id="d-aviso" class="veredicto v-neutro" style="margin-top:14px;display:none"></div>
+    <div style="overflow-x:auto"><table class="diario"><thead><tr><th>Fecha</th><th>Hora</th><th>Activo</th><th>Dir</th><th>Cal</th><th>R</th><th>Nota</th><th></th></tr></thead><tbody id="d-body"></tbody></table></div>
+  </div>
+  <div class="widget" style="max-width:1000px">
+    <h3>Auditoría automática</h3>
+    <div class="wsub">El protocolo de revisión mensual (C-11.1), ejecutado por la máquina sobre tus registros: esperanza por calidad, por franja horaria y por activo, rachas, curva en R y hallazgos redactados. Cuantos más registros, más afilada.</div>
+    <div class="sim-botones"><button class="pbtn" id="aud-btn" style="border-color:var(--trazador);color:var(--trazador)">Auditar mi diario</button></div>
+    <div id="aud-res"></div>
+  </div>
+  <div class="widget" style="max-width:1000px">
+    <h3>Tus datos: copia de seguridad</h3>
+    <div class="wsub">Todo (diario, firma, examen, campo de tiro) vive solo en ESTE navegador. Si limpias datos de navegación o cambias de dispositivo, se pierde — salvo que exportes. El archivo JSON que descargas es tuyo, legible, y se importa en cualquier otro navegador con este mismo manual. Hazlo semanalmente: es tu caja fuerte.</div>
+    <div class="sim-botones">
+      <button class="pbtn" id="bk-exp" style="border-color:var(--alza);color:var(--alza)">⬇ Exportar todo (JSON)</button>
+      <button class="pbtn" id="bk-imp">⬆ Importar copia</button>
+      <input type="file" id="bk-file" accept="application/json" style="display:none">
+      <span id="bk-msg" style="font-family:var(--mono);font-size:12px;color:var(--sombra);align-self:center"></span>
+    </div>
+    <div class="veredicto v-neutro" id="bk-aviso" style="margin-top:12px;display:none"></div>
+  </div>
+
+  <div class="concepto">
+    <div class="frase"><span class="n">C-11.1</span><p>La revisión vale más que el registro. Una vez al mes, siéntate con tu diario como si auditaras a un desconocido.</p></div>
+    <details><summary>El protocolo de revisión mensual</summary><div class="cuerpo">
+      <p>Cuatro preguntas, en este orden: <b>1)</b> ¿Cuál es mi esperanza por etiqueta de calidad? (si los C son negativos — lo serán — deja de operarlos y ya has mejorado). <b>2)</b> ¿Hay horas, días o activos donde pierdo sistemáticamente? (tu hora maldita del M-09 vive aquí). <b>3)</b> ¿Qué dicen mis notas emocionales en las perdedoras? (busca la palabra que se repite: "dudé", "rabia", "aburrido"). <b>4)</b> ¿Mi payoff real se acerca al planeado, o estoy amputando ganadores? Cada respuesta se convierte en UNA regla nueva como máximo — los sistemas mueren de obesidad normativa igual que de anarquía.</p>
+    </div></details>
+  </div>
+</section>
+
+<!-- ============ M-12 CHECKLIST ============ -->
+<section class="mod alt" id="m12">
+  <div class="mod-head">
+    <div class="kicker">Módulo 12</div>
+    <h2>Checklist: el ritual antes del gatillo</h2>
+    <p class="intro">Los pilotos con veinte mil horas de vuelo siguen leyendo la checklist en voz alta. No porque no se la sepan: porque saben que la memoria y la presión no se llevan bien. Las casillas se reinician cada día. La de operación se rellena ANTES de cada disparo — sin las cinco, el sistema está bloqueado.</p>
+  </div>
+  <div class="chk-grupo"><h4>Pre-sesión <span style="font-family:var(--mono);font-size:11px;color:var(--sombra)">· una vez al día, antes del primer gráfico</span></h4>
+    <label><input type="checkbox" class="chk" data-g="s"><span>He dormido razonablemente y no traigo prisa, rabia ni euforia de ayer.</span></label>
+    <label><input type="checkbox" class="chk" data-g="s"><span>Conozco el contexto mayor de mis activos (mapa 1h/4h y zonas marcadas).</span></label>
+    <label><input type="checkbox" class="chk" data-g="s"><span>Sé qué noticias o eventos pueden mover hoy el mercado — y a qué hora.</span></label>
+    <label><input type="checkbox" class="chk" data-g="s"><span>Acepto que hoy puede ser un día CERO señales, y que eso es ejecutar el sistema.</span></label>
+  </div>
+  <div class="chk-grupo"><h4>Pre-operación <span style="font-family:var(--mono);font-size:11px;color:var(--sombra)">· antes de CADA disparo</span></h4>
+    <label><input type="checkbox" class="chk" data-g="o"><span>Pieza 1-2: el contexto mayor apoya la idea y estoy en una zona de liquidez mapeada de antemano.</span></label>
+    <label><input type="checkbox" class="chk" data-g="o"><span>Pieza 3: hubo barrida con mecha de absorción y reintegro. No estoy adivinando: llegué tarde a propósito.</span></label>
+    <label><input type="checkbox" class="chk" data-g="o"><span>Pieza 4: tengo confirmación (divergencia / agotamiento) en la temporalidad de entrada.</span></label>
+    <label><input type="checkbox" class="chk" data-g="o"><span>El riesgo TOTAL de la idea (todas las patas correlacionadas juntas) es ≤ 1R, con stop y tamaño ya calculados.</span></label>
+    <label><input type="checkbox" class="chk" data-g="o"><span>Acepto perder este R ahora mismo, tengo la salida pactada (parcial + runner), y no estoy en revancha ni euforia.</span></label>
+    <button id="chk-boton" disabled>Sistema bloqueado — faltan casillas</button>
+  </div>
+  <div class="chk-grupo"><h4>Post-sesión <span style="font-family:var(--mono);font-size:11px;color:var(--sombra)">· al cerrar la pantalla</span></h4>
+    <label><input type="checkbox" class="chk" data-g="p"><span>Toda operación cerrada está registrada en el diario, con hora y nota emocional.</span></label>
+    <label><input type="checkbox" class="chk" data-g="p"><span>He apuntado (o capturado) cualquier patrón de la galería que haya visto hoy, operado o no.</span></label>
+    <label><input type="checkbox" class="chk" data-g="p"><span>Me puntúo la EJECUCIÓN del día (no el resultado): ¿seguí las reglas? Esa es la única nota que existe.</span></label>
+  </div>
+</section>
+
+<!-- ============ M-12B EXAMEN ============ -->
+<section class="mod" id="m12b">
+  <div class="mod-head">
+    <div class="kicker">Módulo 12B · Evaluación</div>
+    <h2>El examen: ¿de verdad aprendiste?</h2>
+    <p class="intro">Doce preguntas: conceptos, cálculos mentales y lectura de gráficos. Sin trampa y sin tiempo. Se aprueba con 9. Ojo: varias preguntas están diseñadas para pillar exactamente los reflejos que este manual intenta reprogramarte — si respondes con el instinto en vez de con el sistema, lo verás en la nota.</p>
+  </div>
+  <div id="exam"></div>
+  <div class="sim-botones"><button class="pbtn" id="ex-corregir" style="border-color:var(--trazador);color:var(--trazador)">Corregir examen</button><button class="pbtn" id="ex-reset">Reintentar</button></div>
+  <div class="veredicto v-neutro" id="ex-nota" style="margin-top:16px;display:none;max-width:860px"></div>
+</section>
+
+<!-- ============ M-13 MANIFIESTO Y FIRMA ============ -->
+<section class="mod alt grid-bg" id="m13">
+  <div class="mod-head">
+    <div class="kicker">Módulo 13 · Cierre</div>
+    <h2>El manifiesto del francotirador</h2>
+  </div>
+  <div class="prosa" style="font-size:19px;max-width:720px">
+    <p>No soy un apostador. Soy un gestor de riesgo con un sistema.</p>
+    <p>Mi trabajo no es predecir el mercado ni ganar hoy: es ejecutar mi ventaja, operación tras operación, con el mismo tamaño y el mismo pulso.</p>
+    <p>Acepto la pérdida rápida como el alquiler de mi negocio. No promedio pérdidas. No muevo stops en contra. No opero por revancha, ni por euforia, ni de madrugada, ni sin las cuatro piezas.</p>
+    <p>Sé que perderé muchas veces seguidas y que eso no significa nada. Sé que mi beneficio vive en unos pocos trenes al mes, y mi único deber sagrado es no bajarme de ellos antes de tiempo.</p>
+    <p>Mido todo. Porque lo que no se mide, se repite — y lo que se mide, se corrige.</p>
+  </div>
+
+  <div class="widget" id="w-firma" style="border-color:var(--baja-dim);max-width:720px">
+    <h3 style="color:var(--baja)">Contrato de disciplina</h3>
+    <div class="wsub">Escribe tu nombre y firma con el ratón o el dedo. Queda guardado en este navegador: cada vez que abras el manual, tu firma te estará esperando. Romper el contrato es cosa tuya — pero lo harás mirándola.</div>
+    <div class="ctrl"><label for="f-nombre">Nombre del firmante</label><input type="number" id="f-nombre" style="display:none"><input type="text" id="f-nom" placeholder="Tu nombre" style="background:var(--tinta);border:1px solid var(--linea2);color:var(--hueso);font-family:var(--mono);font-size:15px;padding:10px 12px;border-radius:3px;flex:1"></div>
+    <canvas id="f-canvas" width="640" height="170" style="width:100%;background:var(--tinta);border:1px dashed var(--baja-dim);border-radius:4px;cursor:crosshair;touch-action:none;margin-top:10px"></canvas>
+    <div style="display:flex;gap:12px;margin-top:14px;flex-wrap:wrap;align-items:center">
+      <button id="f-firmar" style="background:var(--baja);color:#fff;border:none;font-family:var(--mono);font-size:13px;letter-spacing:.1em;padding:12px 22px;border-radius:3px;cursor:pointer;text-transform:uppercase">Sellar contrato</button>
+      <button id="f-borrar" style="background:transparent;color:var(--ceniza);border:1px solid var(--linea2);font-family:var(--mono);font-size:13px;padding:12px 18px;border-radius:3px;cursor:pointer">Borrar</button>
+      <span id="f-estado" style="font-family:var(--mono);font-size:12.5px;color:var(--sombra)"></span>
+    </div>
+  </div>
+  <footer style="margin-top:70px;font-family:var(--mono);font-size:11px;color:var(--sombra);max-width:720px;line-height:1.8">
+    MANUAL DE CAMPO · EL FRANCOTIRADOR DE LIQUIDEZ · Este documento es material educativo. No es asesoramiento financiero ni una promesa de resultados: la mayoría de quienes operan derivados apalancados pierde dinero. Los "expedientes reales" proceden de un mes de operativa real auditada; una muestra pequeña ilustra mecanismos, no garantiza estadísticas. Opera solo con dinero cuya pérdida total puedas asumir.
+  </footer>
+</section>
+</main>
+<script>
+(function(){
+"use strict";
+/* ---- nav activa ---- */
+var links=document.querySelectorAll('nav.rail a.item:not(.soon)');
+var secs=[].map.call(links,function(a){return document.querySelector(a.getAttribute('href'))}).filter(Boolean);
+var obs=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting){links.forEach(function(l){l.classList.toggle('active',l.getAttribute('href')==='#'+e.target.id)})}})},{rootMargin:'-40% 0px -55% 0px'});
+secs.forEach(function(s){obs.observe(s)});
+
+/* ---- storage seguro ---- */
+var mem={};
+function sget(k){try{return localStorage.getItem(k)}catch(e){return mem[k]||null}}
+function sset(k,v){try{localStorage.setItem(k,v)}catch(e){mem[k]=v}}
+
+/* ---- M-01: frontera de esperanza ---- */
+var eWr=document.getElementById('e-wr'),ePf=document.getElementById('e-pf');
+function eDraw(){
+  var wr=+eWr.value/100, pf=+ePf.value/10;
+  document.getElementById('e-wr-o').textContent=Math.round(wr*100)+'%';
+  document.getElementById('e-pf-o').textContent=pf.toFixed(1);
+  var W=560,H=240,x0=52,x1=540,y0=200,y1=14,pmax=6;
+  function X(w){return x0+(w-.10)/(.90-.10)*(x1-x0)}
+  function Y(p){return y0-(p/pmax)*(y0-y1)}
+  var d='';
+  for(var w=.12;w<=.90;w+=.01){var p=(1-w)/w;if(p>pmax)continue;d+=(d?'L':'M')+X(w).toFixed(1)+','+Y(p).toFixed(1)+' ';}
+  document.getElementById('e-curva').setAttribute('d',d);
+  var dot=document.getElementById('e-dot');
+  dot.setAttribute('cx',X(wr));dot.setAttribute('cy',Y(Math.min(pf,pmax)));
+  var esp=wr*pf-(1-wr);
+  var ver=document.getElementById('e-ver'),txt=document.getElementById('e-txt'),big=ver.querySelector('.big');
+  ver.className='veredicto '+(esp>0.05?'v-alza':esp<-0.02?'v-baja':'v-neutro');
+  big.textContent='Esperanza: '+(esp>=0?'+':'')+esp.toFixed(2)+'R por operación';
+  if(esp>0.05){txt.textContent='Combinación viable. Con este perfil, cada 100 operaciones producen de media '+(esp*100).toFixed(0)+'R. Fíjate: puedes bajar mucho el acierto si el payoff acompaña — y al revés. Lo que importa es estar por encima de la curva ámbar.';}
+  else if(esp<-0.02){txt.textContent='Zona de ruina. Da igual la disciplina, el esfuerzo o la intuición: cada operación te acerca a cero. La única salida es cambiar una de las dos palancas — no operar más fuerte.';}
+  else{txt.textContent='Filo de la navaja: esperanza ~0. Aquí trabajas gratis para tu bróker (las comisiones te hunden en negativo). La curva ámbar es exactamente Payoff = (1−Acierto)/Acierto.';}
+  dot.setAttribute('fill',esp>0.05?'#4CC38A':esp<-0.02?'#E5534B':'#FFB021');
+}
+eWr.addEventListener('input',eDraw);ePf.addEventListener('input',eDraw);eDraw();
+
+/* ---- M-05: calculadora ---- */
+var cCap=document.getElementById('c-cap'),cR=document.getElementById('c-rpct'),cS=document.getElementById('c-stop');
+function cDraw(){
+  var cap=Math.max(1,+cCap.value||0), rp=+cR.value, st=+cS.value;
+  document.getElementById('c-rpct-o').textContent=rp.toFixed(2)+'%';
+  document.getElementById('c-stop-o').textContent=st.toFixed(1)+'%';
+  var R=cap*rp/100, tam=R/(st/100), lev=tam/cap;
+  var out=document.getElementById('c-out');
+  out.className='veredicto '+(rp>3?'v-baja':rp>2?'v-neutro':'v-alza');
+  out.innerHTML='<span class="big">R = '+R.toFixed(2)+' · Tamaño = '+tam.toLocaleString('es-ES',{maximumFractionDigits:0})+'</span>'
+   +'Eso implica una exposición de '+lev.toFixed(1)+'× tu capital'+(lev>1?' (necesitas apalancamiento — al servicio del stop, recuerda C-2.1)':'')+'. '
+   +(rp>3?'Aviso: >3% por idea es territorio de rachas letales — una racha normal de 6 pérdidas te costaría más del 18% de la cuenta.':rp>2?'Riesgo agresivo: asumible solo con esperanza ya demostrada con datos, no con fe.':'Riesgo conservador: una racha normal de 6 pérdidas te costaría un '+(rp*6).toFixed(1)+'% — incómodo, pero nunca letal.');
+}
+[cCap,cR,cS].forEach(function(el){el.addEventListener('input',cDraw)});cDraw();
+
+/* ---- M-05: rachas ---- */
+var rWr=document.getElementById('r-wr');
+function rDraw(){
+  var wr=+rWr.value/100,q=1-wr,N=100;
+  document.getElementById('r-wr-o').textContent=Math.round(wr*100)+'%';
+  var body=document.getElementById('r-body'),html='';
+  [3,4,5,6,8,10].forEach(function(k){
+    var p=1-Math.pow(1-Math.pow(q,k),N-k+1);
+    var pc=p*100, cls=pc>50?' class="hi"':'';
+    html+='<tr><td>'+k+' pérdidas seguidas</td><td'+cls+'>'+(pc>99?'≈ seguro':pc.toFixed(pc<1?1:0)+'%')+'</td></tr>';
+  });
+  body.innerHTML=html;
+  var exp=Math.round(Math.log(N)/Math.log(1/q));
+  var ver=document.getElementById('r-ver');
+  ver.className='veredicto v-neutro';
+  ver.innerHTML='<span class="big">Racha "normal" esperada: ~'+exp+' pérdidas seguidas</span>Con '+Math.round(wr*100)+'% de acierto, en 100 operaciones lo raro sería NO sufrir una racha así. Dimensiona tu R para sobrevivirla con la cabeza fría — y cuando llegue, salúdala: es la estadística pasando lista, no tu sistema muriendo.';
+}
+rWr.addEventListener('input',rDraw);rDraw();
+
+/* ---- M-13: firma ---- */
+var cv=document.getElementById('f-canvas'),ctx=cv.getContext('2d'),dib=false,hay=false;
+ctx.strokeStyle='#E5534B';ctx.lineWidth=2.4;ctx.lineCap='round';ctx.lineJoin='round';
+function pos(ev){var r=cv.getBoundingClientRect(),t=ev.touches?ev.touches[0]:ev;return{x:(t.clientX-r.left)*cv.width/r.width,y:(t.clientY-r.top)*cv.height/r.height}}
+function down(ev){dib=true;hay=true;var p=pos(ev);ctx.beginPath();ctx.moveTo(p.x,p.y);ev.preventDefault()}
+function move(ev){if(!dib)return;var p=pos(ev);ctx.lineTo(p.x,p.y);ctx.stroke();ev.preventDefault()}
+function up(){dib=false}
+cv.addEventListener('mousedown',down);cv.addEventListener('mousemove',move);window.addEventListener('mouseup',up);
+cv.addEventListener('touchstart',down,{passive:false});cv.addEventListener('touchmove',move,{passive:false});cv.addEventListener('touchend',up);
+var nom=document.getElementById('f-nom'),est=document.getElementById('f-estado');
+document.getElementById('f-borrar').addEventListener('click',function(){ctx.clearRect(0,0,cv.width,cv.height);hay=false;est.textContent='';sset('ft_firma','');sset('ft_nombre','');sset('ft_fecha','')});
+document.getElementById('f-firmar').addEventListener('click',function(){
+  if(!nom.value.trim()||!hay){est.textContent='Falta '+(!nom.value.trim()?'el nombre':'la firma')+'. Un contrato a medias no es un contrato.';est.style.color='#E5534B';return}
+  var f=new Date(),ff=f.toLocaleDateString('es-ES',{day:'numeric',month:'long',year:'numeric'});
+  sset('ft_firma',cv.toDataURL());sset('ft_nombre',nom.value.trim());sset('ft_fecha',ff);
+  sellar(nom.value.trim(),ff);
+});
+function sellar(n,f){
+  est.style.color='#4CC38A';
+  est.textContent='Sellado: '+n+' · '+f+' · El contrato está en vigor.';
+}
+var g_f=sget('ft_firma'),g_n=sget('ft_nombre'),g_d=sget('ft_fecha');
+if(g_f&&g_n){var img=new Image();img.onload=function(){ctx.drawImage(img,0,0);hay=true};img.src=g_f;nom.value=g_n;sellar(g_n,g_d||'');}
+})();
+</script>
+<script>
+(function(){
+"use strict";
+var $=function(id){return document.getElementById(id)};
+var wr=$('l-wr'),pf=$('l-pf'),n=$('l-n'),r=$('l-r'),m=$('l-m'),cv=$('lab-cv'),ctx=cv.getContext('2d');
+var SIMS=300,DIBUJA=70;
+function simular(){
+  var p=+wr.value/100,pay=+pf.value/10,T=+n.value,riesgo=+r.value/1000,M=+m.value;
+  $('l-wr-o').textContent=Math.round(p*100)+'%';
+  $('l-pf-o').textContent=pay.toFixed(1);
+  $('l-n-o').textContent=T;
+  $('l-r-o').textContent=(riesgo*100).toFixed(1)+'%';
+  $('l-m-o').textContent=M;
+  var tot=T*M, caminos=[], fins=[], ruinas=0, mesesNeg=0, mesesTot=0, ddMax=[];
+  for(var s=0;s<SIMS;s++){
+    var eq=1, serie=[1], pico=1, dd=0, ruina=false;
+    for(var mm=0;mm<M;mm++){
+      var ini=eq;
+      for(var t=0;t<T;t++){
+        eq*= (Math.random()<p) ? (1+riesgo*pay) : (1-riesgo);
+        if(eq>pico)pico=eq;
+        var d=1-eq/pico; if(d>dd)dd=d;
+        if(eq<0.5)ruina=true;
+      }
+      serie.push(eq);
+      mesesTot++; if(eq<ini)mesesNeg++;
+    }
+    caminos.push(serie); fins.push(eq); ddMax.push(dd); if(ruina)ruinas++;
+  }
+  fins.sort(function(a,b){return a-b}); ddMax.sort(function(a,b){return a-b});
+  function pct(arr,q){return arr[Math.floor(q*(arr.length-1))]}
+  var med=pct(fins,.5),p10=pct(fins,.1),p90=pct(fins,.9),ddM=pct(ddMax,.5),pr=ruinas/SIMS,pn=mesesNeg/mesesTot;
+  // percentiles por mes para la banda
+  var bandas=[];
+  for(var k=0;k<=M;k++){
+    var col=caminos.map(function(c){return c[k]}).sort(function(a,b){return a-b});
+    bandas.push([pct(col,.1),pct(col,.5),pct(col,.9)]);
+  }
+  dibujar(caminos,bandas,M);
+  var esp=p*pay-(1-p);
+  var f=function(x){return (x*100).toFixed(0)+'%'};
+  var mult=function(x){return x>=10?'×'+x.toFixed(0):x>=2?'×'+x.toFixed(1):f(x-1>=0?x-0:x)};
+  var card=function(lab,val,col){return '<div style="background:var(--tinta);border:1px solid var(--linea);border-radius:4px;padding:14px 16px"><div style="font-family:var(--mono);font-size:10.5px;letter-spacing:.12em;color:var(--sombra);text-transform:uppercase">'+lab+'</div><div style="font-family:var(--mono);font-size:21px;font-weight:600;color:'+col+';margin-top:4px">'+val+'</div></div>'};
+  function dinero(x){var g=(x-1)*100; return (g>=0?'+':'')+g.toFixed(0)+'%'}
+  $('lab-stats').innerHTML=
+    card('Esperanza / idea',(esp>=0?'+':'')+esp.toFixed(2)+'R',esp>0.03?'#4CC38A':'#E5534B')+
+    card('Destino mediano',dinero(med),med>=1?'#4CC38A':'#E5534B')+
+    card('Vida con mala suerte (p10)',dinero(p10),p10>=1?'#4CC38A':'#E5534B')+
+    card('Vida con buena suerte (p90)',dinero(p90),'#98A1AE')+
+    card('Meses en negativo',f(pn),pn>0.45?'#E5534B':'#FFB021')+
+    card('Drawdown típico',('−')+f(ddM),ddM>0.3?'#E5534B':'#FFB021')+
+    card('Prob. de caer a la mitad',f(pr),pr>0.1?'#E5534B':pr>0.02?'#FFB021':'#4CC38A');
+  var ver=$('lab-ver'),msg,cls;
+  if(esp<=0.01){cls='v-baja';msg='<span class="big">Este sistema no tiene ventaja</span>Mira la banda: la mediana muere y solo las vidas con suerte extrema sobreviven un tiempo. Ninguna gestión del riesgo arregla una esperanza negativa — solo decide si mueres rápido o despacio. Cambia las palancas de arriba, no el tamaño.';}
+  else if(pr>0.15){cls='v-baja';msg='<span class="big">Ventaja real, riesgo suicida</span>La esperanza es positiva y aun así '+f(pr)+' de las vidas caen a la mitad por el camino: el riesgo por idea es demasiado grande para la varianza de este perfil. Baja el % de riesgo y mira cómo la banda se estrecha sin tocar la esperanza. Sobrevivir es prerequisito de componer.';}
+  else if(pn>0.4){cls='v-neutro';msg='<span class="big">Rentable, pero de digestión dura</span>Destino mediano positivo con '+f(pn)+' de meses rojos: este perfil paga bien a quien aguanta ver rojo casi la mitad de los meses sin tocar nada. Es el precio psicológico de los perfiles de payoff alto — el M-06 no era decorativo.';}
+  else{cls='v-alza';msg='<span class="big">Perfil sólido</span>Esperanza positiva, ruina improbable y meses rojos digeribles. Ahora la pregunta honesta: ¿estos números son medidos con 100+ operaciones tuyas, o deseados? El simulador computa lo que le das; la app y el diario existen para que lo que le des sea verdad.';}
+  ver.className='veredicto '+cls; ver.innerHTML=msg;
+}
+function dibujar(caminos,bandas,M){
+  var W=cv.clientWidth,H=cv.clientHeight,dpr=window.devicePixelRatio||1;
+  cv.width=W*dpr;cv.height=H*dpr;ctx.setTransform(dpr,0,0,dpr,0,0);
+  ctx.clearRect(0,0,W,H);
+  var pad={l:56,r:16,t:14,b:26};
+  var lo=Math.log(0.25),hi=Math.log(4);
+  caminos.forEach(function(c){c.forEach(function(v){var lv=Math.log(Math.max(v,0.01));if(lv>hi)hi=lv;})});
+  hi=Math.min(hi,Math.log(1000));
+  function X(k){return pad.l+(k/M)*(W-pad.l-pad.r)}
+  function Y(v){var lv=Math.log(Math.max(v,0.01));return pad.t+(1-(lv-lo)/(hi-lo))*(H-pad.t-pad.b)}
+  ctx.font='10px "IBM Plex Mono"';ctx.fillStyle='#6B7583';
+  [0.25,0.5,1,2,4,10,50].forEach(function(g){
+    if(Math.log(g)>hi||Math.log(g)<lo)return;
+    var y=Y(g);ctx.strokeStyle=g===1?'#3a4552':'#1d242e';ctx.beginPath();ctx.moveTo(pad.l,y);ctx.lineTo(W-pad.r,y);ctx.stroke();
+    ctx.fillText(g===1?'inicio':'×'+g,8,y+3);
+  });
+  var yr=Y(0.5);ctx.strokeStyle='rgba(229,83,75,.6)';ctx.setLineDash([5,4]);ctx.beginPath();ctx.moveTo(pad.l,yr);ctx.lineTo(W-pad.r,yr);ctx.stroke();ctx.setLineDash([]);
+  ctx.fillStyle='rgba(229,83,75,.8)';ctx.fillText('−50 % · zona de ruina',W-pad.r-130,yr-5);
+  ctx.strokeStyle='rgba(152,161,174,.10)';ctx.lineWidth=1;
+  for(var s=0;s<DIBUJA;s++){var c=caminos[Math.floor(s*caminos.length/DIBUJA)];
+    ctx.beginPath();c.forEach(function(v,k){k?ctx.lineTo(X(k),Y(v)):ctx.moveTo(X(k),Y(v))});ctx.stroke();}
+  ctx.fillStyle='rgba(255,176,33,.09)';ctx.beginPath();
+  bandas.forEach(function(b,k){k?ctx.lineTo(X(k),Y(b[2])):ctx.moveTo(X(k),Y(b[2]))});
+  for(var k=M;k>=0;k--)ctx.lineTo(X(k),Y(bandas[k][0]));
+  ctx.closePath();ctx.fill();
+  ctx.strokeStyle='#FFB021';ctx.lineWidth=2;ctx.beginPath();
+  bandas.forEach(function(b,k){k?ctx.lineTo(X(k),Y(b[1])):ctx.moveTo(X(k),Y(b[1]))});ctx.stroke();
+  ctx.fillStyle='#6B7583';
+  ctx.fillText('meses →',W-pad.r-52,H-8);
+}
+[wr,pf,n,r,m].forEach(function(el){el.addEventListener('input',simular)});
+$('l-re').addEventListener('click',simular);
+document.querySelectorAll('.pbtn[data-p]').forEach(function(b){
+  b.addEventListener('click',function(){
+    var v=b.getAttribute('data-p');
+    if(!v){alert('Este botón es para el futuro: cuando tu diario o tu app tengan 100+ operaciones medidas, mete aquí TU tasa de acierto, TU payoff y TU frecuencia reales. Hasta entonces, todo perfil que simules es una hipótesis.');return}
+    var a=v.split(',');wr.value=a[0];pf.value=a[1];n.value=a[2];r.value=a[3];m.value=a[4];simular();
+    document.querySelectorAll('.pbtn').forEach(function(x){x.classList.remove('on')});b.classList.add('on');
+  });
+});
+window.addEventListener('resize',simular);
+simular();
+})();
+</script>
+<script>
+(function(){
+"use strict";
+var $=function(id){return document.getElementById(id)};
+var mem={};function sget(k){try{return localStorage.getItem(k)}catch(e){return mem[k]||null}}
+function sset(k,v){try{localStorage.setItem(k,v)}catch(e){mem[k]=v}}
+
+/* ---- M-0B traductor ---- */
+var tCap=$('t-cap'),tR=$('t-r');
+function tDraw(){
+  var cap=Math.max(1,+tCap.value||0),rp=+tR.value;
+  $('t-r-o').textContent=rp.toFixed(1)+'%';
+  var R=cap*rp/100;
+  var eur=function(x){return x.toLocaleString('es-ES',{maximumFractionDigits:2})};
+  var card=function(l,v,c){return '<div style="background:var(--tinta);border:1px solid var(--linea);border-radius:4px;padding:13px 15px"><div style="font-family:var(--mono);font-size:10.5px;letter-spacing:.1em;color:var(--sombra);text-transform:uppercase">'+l+'</div><div style="font-family:var(--mono);font-size:19px;font-weight:600;color:'+c+';margin-top:3px">'+v+'</div></div>'};
+  $('t-out').innerHTML=
+    card('1R (tu riesgo por idea)',eur(R),'#FFB021')+
+    card('Una pérdida (−1R)','−'+eur(R),'#E5534B')+
+    card('Un buen trade (+3R)','+'+eur(R*3),'#4CC38A')+
+    card('Un tren (+5R)','+'+eur(R*5),'#4CC38A')+
+    card('Racha normal de 5 pérdidas','−'+eur(R*5)+' ('+(rp*5).toFixed(1)+'%)','#E5534B')+
+    card('Un mes bueno (+10R)','+'+eur(R*10)+' (+'+(rp*10).toFixed(0)+'%)','#4CC38A');
+  $('t-nota').innerHTML='<span class="big">Este es el poder de hablar en R</span>Fíjate: las frases del manual ("una racha de 5 es normal", "+10R es un mes bueno") significan lo mismo para tu cuenta que para una de un millón — solo cambia la traducción. Y fíjate también en la trampa contraria: si el −1R de arriba te parece calderilla, la tentación será subir el % de riesgo… y entonces la racha normal de 5 deja de ser incómoda y empieza a ser peligrosa. El % de riesgo se elige mirando la fila de la racha, no la del tren.';
+}
+tCap.addEventListener('input',tDraw);tR.addEventListener('input',tDraw);tDraw();
+
+/* ---- M-11 diario ---- */
+function cargar(){try{return JSON.parse(sget('ft_diario')||'[]')}catch(e){return[]}}
+function guardar(a){sset('ft_diario',JSON.stringify(a))}
+var hoy=new Date();$('d-fecha').value=hoy.toISOString().slice(0,10);
+function pintar(){
+  var a=cargar(),b=$('d-body'),html='';
+  a.forEach(function(t,i){
+    var cls=t.r>0?'pos':t.r<0?'neg':'';
+    html+='<tr><td data-l="Fecha">'+t.f+'</td><td data-l="Hora">'+(t.h||'—')+'</td><td data-l="Activo">'+t.a+'</td><td data-l="Dir">'+t.d+'</td><td data-l="Cal">'+t.c+'</td><td data-l="R" class="'+cls+'">'+(t.r>0?'+':'')+t.r.toFixed(1)+'R</td><td data-l="Nota" style="max-width:220px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="'+t.n.replace(/"/g,'&quot;')+'">'+t.n+'</td><td data-l=""><button data-i="'+i+'" title="borrar">✕</button></td></tr>';
+  });
+  b.innerHTML=html||'<tr><td colspan="8" style="color:var(--sombra);padding:18px 8px">Sin registros todavía. Tu primera operación registrada vale más que las últimas diez sin registrar.</td></tr>';
+  b.querySelectorAll('button').forEach(function(x){x.addEventListener('click',function(){var arr=cargar();arr.splice(+x.getAttribute('data-i'),1);guardar(arr);pintar()})});
+  var st=$('d-stats');
+  if(!a.length){st.innerHTML='';$('d-aviso').style.display='none';return}
+  var rs=a.map(function(t){return t.r}),n=rs.length;
+  var w=rs.filter(function(x){return x>0}),l=rs.filter(function(x){return x<0});
+  var wr=w.length/n, aw=w.length?w.reduce(function(s,x){return s+x},0)/w.length:0, al=l.length?Math.abs(l.reduce(function(s,x){return s+x},0)/l.length):0;
+  var pay=al?aw/al:0, esp=rs.reduce(function(s,x){return s+x},0)/n;
+  var card=function(lab,v,c){return '<div style="background:var(--tinta);border:1px solid var(--linea);border-radius:4px;padding:13px 15px"><div style="font-family:var(--mono);font-size:10.5px;letter-spacing:.1em;color:var(--sombra);text-transform:uppercase">'+lab+'</div><div style="font-family:var(--mono);font-size:19px;font-weight:600;color:'+c+';margin-top:3px">'+v+'</div></div>'};
+  st.innerHTML=card('Operaciones',n,'#E9E6DD')
+   +card('Tasa de acierto',(wr*100).toFixed(0)+'%','#E9E6DD')
+   +card('Payoff real',pay?pay.toFixed(2)+':1':'—','#E9E6DD')
+   +card('Esperanza / trade',(esp>=0?'+':'')+esp.toFixed(2)+'R',esp>0.03?'#4CC38A':'#E5534B')
+   +card('Total',(rs.reduce(function(s,x){return s+x},0)>=0?'+':'')+rs.reduce(function(s,x){return s+x},0).toFixed(1)+'R','#FFB021');
+  var av=$('d-aviso');av.style.display='block';
+  if(n<30){av.className='veredicto v-neutro';av.innerHTML='<span class="big">Muestra: '+n+'/30</span>Estas cifras aún son más ruido que señal — con menos de 30 registros, tu tasa de acierto real podría estar a ±15 puntos de la que ves. Sigue registrando: cada trade afina el retrato.';}
+  else{av.className='veredicto '+(esp>0.05?'v-alza':'v-baja');av.innerHTML='<span class="big">Muestra suficiente para primeras conclusiones</span>'+(esp>0.05?'Esperanza positiva medida con datos reales. Ahora sí: lleva estos números al Laboratorio (M-08, botón "Tus datos medidos") y simula tu año antes de tocar el tamaño.':'Esperanza no positiva con muestra ya decente: el sistema o su ejecución tienen una fuga. Antes de cambiar nada, ejecuta el protocolo de revisión (C-11.1): calidad por etiqueta, horas, y notas emocionales de las perdedoras.');}
+}
+$('d-add').addEventListener('click',function(){
+  var r=parseFloat($('d-res').value);
+  if(!$('d-act').value.trim()||isNaN(r)){$('d-msg').textContent='Faltan datos: activo y resultado en R como mínimo.';return}
+  var arr=cargar();
+  arr.unshift({f:$('d-fecha').value,h:$('d-hora').value,a:$('d-act').value.trim().toUpperCase(),d:$('d-dir').value,c:$('d-cal').value.charAt(0),r:r,n:$('d-nota').value.trim()});
+  guardar(arr);
+  $('d-act').value='';$('d-res').value='';$('d-nota').value='';$('d-msg').textContent='Registrada. Operación cerrada de verdad.';
+  pintar();
+});
+$('d-csv').addEventListener('click',function(){
+  var a=cargar();if(!a.length){$('d-msg').textContent='Nada que exportar todavía.';return}
+  var csv='fecha;hora;activo;direccion;calidad;resultado_R;nota\n'+a.map(function(t){return [t.f,t.h,t.a,t.d,t.c,t.r,'"'+t.n.replace(/"/g,'""')+'"'].join(';')}).join('\n');
+  var el=document.createElement('a');el.href='data:text/csv;charset=utf-8,'+encodeURIComponent(csv);el.download='diario_francotirador.csv';el.click();
+});
+pintar();
+
+/* ---- M-12 checklist ---- */
+var chks=document.querySelectorAll('.chk'),bot=$('chk-boton');
+var HOY=new Date().toISOString().slice(0,10);
+if(sget('ft_chk_dia')!==HOY){sset('ft_chk_dia',HOY);sset('ft_chk','')}
+var est=(sget('ft_chk')||'').split(',');
+chks.forEach(function(c,i){c.checked=est[i]==='1';
+  c.addEventListener('change',function(){
+    sset('ft_chk',[].map.call(chks,function(x){return x.checked?'1':'0'}).join(','));
+    revisar();
+  });
+});
+function revisar(){
+  var op=[].filter.call(chks,function(c){return c.getAttribute('data-g')==='o'});
+  var ok=op.every(function(c){return c.checked});
+  bot.disabled=!ok;
+  bot.classList.toggle('libre',ok);
+  bot.textContent=ok?'Sistema desbloqueado — permiso para ejecutar el plan':'Sistema bloqueado — faltan casillas';
+}
+revisar();
+})();
+</script>
+<script>
+(function(){
+"use strict";
+var $=function(id){return document.getElementById(id)};
+/* ================= SIMULACRO ================= */
+var cv=$('sim-cv'),ctx=cv.getContext('2d');
+/* --- datos sintéticos --- */
+function velas(cl,ov){ /* construye velas desde cierres; ov = overrides de mínimos/máximos */
+  var v=[];for(var i=0;i<cl.length;i++){var o=i?cl[i-1]:cl[0];var c=cl[i];
+    var w=0.12+((i*37)%23)/60;var h=Math.max(o,c)+w*0.7;var l=Math.min(o,c)-w;
+    if(ov&&ov[i]){if(ov[i].l!==undefined)l=ov[i].l;if(ov[i].h!==undefined)h=ov[i].h;}
+    v.push({o:o,h:h,l:l,c:c});}
+  return v;}
+var htfC=[80,82.5,85,84,87,90,92.5,95,93.5,91,88,85.5,82,79,76,73,70,67,64.5,62.6,64,67,70.5,74,77.5,78.2,76,73.5,70.8,68,65.5,63.1,65,68,71.5,74.1,72.5,70,68.2,66.5,65,64.2,63.6,63.4];
+var HTF=velas(htfC,{7:{h:95.6},19:{l:61.9},31:{l:62.2}});
+var ltfC=[67.2,66.8,66.9,66.3,65.9,66.1,65.6,65.2,65.4,64.9,64.6,64.8,64.3,63.9,64.1,63.6,63.3,63.5,63.1,62.8,63.0,62.7,63.2,63.6,63.4,63.9,64.5,64.2,63.8,63.5,63.1,62.9,62.6,62.8,62.5,62.3,62.6,62.9,62.4,62.1,62.4,62.0,62.85];
+var LTF=velas(ltfC,{18:{l:62.55},41:{l:61.55},42:{l:61.9}});
+var SWEEP=41, LOW1=18, SWINGHI=0;
+var futuro=[63.3,63.1,63.7,64.2,64.0,64.6,65.1,64.8,65.4,65.9,65.6,66.2,66.7];
+/* --- RSI y MACD reales --- */
+function rsi(cl,n){var r=[],g=0,p=0;for(var i=1;i<cl.length;i++){var d=cl[i]-cl[i-1],up=d>0?d:0,dn=d<0?-d:0;
+  if(i<=n){g+=up;p+=dn;r.push(50);if(i===n){g/=n;p/=n;r[r.length-1]=100-100/(1+(p?g/p:99));}}
+  else{g=(g*(n-1)+up)/n;p=(p*(n-1)+dn)/n;r.push(100-100/(1+(p?g/p:99)));}}
+  r.unshift(50);return r;}
+function ema(cl,n){var k=2/(n+1),e=[cl[0]];for(var i=1;i<cl.length;i++)e.push(cl[i]*k+e[i-1]*(1-k));return e;}
+function macdH(cl){var a=ema(cl,8),b=ema(cl,17),m=a.map(function(x,i){return x-b[i]});var s=ema(m,6);return m.map(function(x,i){return x-s[i]})}
+/* --- estado --- */
+var paso=0, marcas={sop:null,res:null,fib:null}, fibClicks=[], anim=0, animT=null;
+var PASOS=['Niveles','Dirección','Zoom','Ojos','Fibonacci','Disparo','Debrief'];
+var subnivel='sop';
+function chip(){var h='';PASOS.forEach(function(p,i){h+='<span class="'+(i<paso?'hecho':i===paso?'act':'')+'">'+(i+1)+' · '+p+'</span>'});$('sim-pasos').innerHTML=h;}
+function instr(t){$('sim-instr').innerHTML=t}
+function fb(t,cls){var e=$('sim-fb');e.textContent=t;e.className='sim-fb '+(cls||'')}
+function botones(arr){var h='';arr.forEach(function(b,i){h+='<button class="pbtn" data-b="'+i+'" '+(b.destacado?'style="border-color:var(--trazador);color:var(--trazador)"':'')+'>'+b.t+'</button>'});
+  $('sim-btns').innerHTML=h;
+  $('sim-btns').querySelectorAll('button').forEach(function(el){el.addEventListener('click',function(){arr[+el.getAttribute('data-b')].f()})});}
+/* --- dibujo --- */
+var vista='HTF';
+function rango(vs,extra){var lo=1e9,hi=-1e9;vs.forEach(function(v){if(v.l<lo)lo=v.l;if(v.h>hi)hi=v.h});
+  (extra||[]).forEach(function(x){if(x<lo)lo=x;if(x>hi)hi=x});var m=(hi-lo)*0.07;return[lo-m,hi+m];}
+function dibujar(){
+  var W=cv.clientWidth,dpr=window.devicePixelRatio||1;cv.width=W*dpr;
+  var Hme=(paso>=3&&vista==='LTF')?290:440, Hind=(paso>=3&&vista==='LTF')?150:0;
+  var Htot=Hme+Hind+30;cv.height=Htot*dpr;cv.style.height=Htot+'px';
+  ctx.setTransform(dpr,0,0,dpr,0,0);ctx.clearRect(0,0,W,Htot);
+  var vs=(vista==='HTF')?HTF:LTF.concat(velas(futuro.slice(0,anim),null).map(function(v,i){var o=i?futuro[i-1]:LTF[LTF.length-1].c;return{o:o,h:Math.max(o,futuro[i])+0.15,l:Math.min(o,futuro[i])-0.15,c:futuro[i]}}));
+  var pad={l:14,r:52,t:14,b:8};
+  var extra=[];if(marcas.sop)extra.push(marcas.sop);if(marcas.res&&vista==='HTF')extra.push(marcas.res);
+  var rg=rango(vs,extra),lo=rg[0],hi=rg[1];
+  var N=vs.length,cw=(W-pad.l-pad.r)/N;
+  function X(i){return pad.l+i*cw+cw/2}
+  function Y(p){return pad.t+(1-(p-lo)/(hi-lo))*(Hme-pad.t-pad.b)}
+  ctx.font='10px "IBM Plex Mono"';
+  for(var g=Math.ceil(lo/2)*2;g<hi;g+=2){ctx.strokeStyle='#1a212b';ctx.beginPath();ctx.moveTo(pad.l,Y(g));ctx.lineTo(W-pad.r,Y(g));ctx.stroke();ctx.fillStyle='#5a6470';ctx.fillText(g.toFixed(0),W-pad.r+8,Y(g)+3);}
+  /* zona de interés en LTF */
+  if(vista==='LTF'&&marcas.sop){ctx.fillStyle='rgba(255,176,33,.07)';ctx.fillRect(pad.l,Y(marcas.sop+0.8),W-pad.l-pad.r,Y(marcas.sop-0.8)-Y(marcas.sop+0.8));}
+  /* velas */
+  vs.forEach(function(v,i){var up=v.c>=v.o,col=up?'#4CC38A':'#E5534B';
+    ctx.strokeStyle=col;ctx.lineWidth=(vista==='LTF'&&i===SWEEP)?2:1.2;
+    ctx.beginPath();ctx.moveTo(X(i),Y(v.h));ctx.lineTo(X(i),Y(v.l));ctx.stroke();
+    ctx.fillStyle=col;var a=Y(Math.max(v.o,v.c)),b=Y(Math.min(v.o,v.c));ctx.fillRect(X(i)-Math.max(1.5,cw*0.32),a,Math.max(3,cw*0.64),Math.max(1.5,b-a));});
+  /* líneas del alumno */
+  function nivel(p,txt,col){ctx.strokeStyle=col;ctx.setLineDash([6,5]);ctx.beginPath();ctx.moveTo(pad.l,Y(p));ctx.lineTo(W-pad.r,Y(p));ctx.stroke();ctx.setLineDash([]);ctx.fillStyle=col;ctx.fillText(txt+' '+p.toFixed(1),pad.l+6,Y(p)-5);}
+  if(marcas.sop)nivel(marcas.sop,'SOPORTE','#4CC38A');
+  if(marcas.res&&vista==='HTF')nivel(marcas.res,'RESISTENCIA','#E5534B');
+  /* fib */
+  if(marcas.fib){var hi2=marcas.fib.hi,lo2=marcas.fib.lo;
+    [[0.382,'38.2'],[0.5,'50'],[0.618,'61.8'],[0.786,'78.6'],[1,'100']].forEach(function(f){
+      var p=lo2+(hi2-lo2)*f[0];var dor=f[0]>=0.6&&f[0]<=0.8;
+      ctx.strokeStyle=dor?'#FFB021':'#4a5563';ctx.setLineDash([3,4]);ctx.beginPath();ctx.moveTo(pad.l,Y(p));ctx.lineTo(W-pad.r,Y(p));ctx.stroke();ctx.setLineDash([]);
+      ctx.fillStyle=dor?'#FFB021':'#6B7583';ctx.fillText(f[1]+'%  '+p.toFixed(1),W-pad.r-78,Y(p)-4);});}
+  /* divergencia en paso>=3 con vista LTF */
+  if(vista==='LTF'&&paso>=3){
+    var cls=ltfC.concat(futuro.slice(0,anim));
+    var R=rsi(cls,10),M=macdH(cls);
+    var t0=Hme+18;
+    ctx.fillStyle='#5a6470';ctx.fillText('RSI — la línea de la fuerza',pad.l,t0-4);
+    var rH=62;function YR(v){return t0+ (1-v/100)*rH}
+    ctx.strokeStyle='#1a212b';[30,50,70].forEach(function(g){ctx.beginPath();ctx.moveTo(pad.l,YR(g));ctx.lineTo(W-pad.r,YR(g));ctx.stroke();});
+    ctx.strokeStyle='#98A1AE';ctx.lineWidth=1.4;ctx.beginPath();
+    R.forEach(function(v,i){i?ctx.lineTo(X(i),YR(v)):ctx.moveTo(X(i),YR(v))});ctx.stroke();
+    var t1=t0+rH+22;
+    ctx.fillStyle='#5a6470';ctx.fillText('MACD (histograma) — la línea del impulso',pad.l,t1-4);
+    var mH=46,mx=Math.max.apply(null,M.map(Math.abs))||1;
+    M.forEach(function(v,i){ctx.fillStyle=v>=0?'rgba(76,195,138,.75)':'rgba(229,83,75,.75)';var h=Math.abs(v)/mx*(mH/2);ctx.fillRect(X(i)-Math.max(1,cw*0.3),t1+mH/2-(v>0?h:0),Math.max(2,cw*0.6),h);});
+    if(marcas.div){
+      ctx.strokeStyle='#E5534B';ctx.lineWidth=1.6;ctx.beginPath();ctx.moveTo(X(LOW1),Y(LTF[LOW1].l)-2);ctx.lineTo(X(SWEEP),Y(LTF[SWEEP].l)-2);ctx.stroke();
+      ctx.strokeStyle='#4CC38A';ctx.beginPath();ctx.moveTo(X(LOW1),YR(R[LOW1]));ctx.lineTo(X(SWEEP),YR(R[SWEEP]));ctx.stroke();
+      ctx.fillStyle='#E5534B';ctx.fillText('precio: mínimo MÁS BAJO',X(LOW1),Y(LTF[SWEEP].l)+16);
+      ctx.fillStyle='#4CC38A';ctx.fillText('RSI: mínimo MÁS ALTO = divergencia',X(LOW1),YR(R[SWEEP])+16);}
+  }
+  /* marcadores de trade en paso>=5 */
+  if(vista==='LTF'&&paso>=5){
+    var e=62.85,st=61.4;
+    ctx.strokeStyle='#FFB021';ctx.beginPath();ctx.moveTo(pad.l,Y(e));ctx.lineTo(W-pad.r,Y(e));ctx.stroke();
+    ctx.fillStyle='#FFB021';ctx.fillText('ENTRADA '+e.toFixed(2),pad.l+6,Y(e)-4);
+    ctx.strokeStyle='#E5534B';ctx.beginPath();ctx.moveTo(pad.l,Y(st));ctx.lineTo(W-pad.r,Y(st));ctx.stroke();
+    ctx.fillStyle='#E5534B';ctx.fillText('STOP '+st.toFixed(2)+'  (−1R)',pad.l+6,Y(st)+12);
+    [[64.3,'+1R'],[65.75,'+2R'],[67.2,'+3R']].forEach(function(t){ctx.fillStyle='#4CC38A';ctx.fillText(t[1],W-pad.r+8,Y(t[0])+3);ctx.strokeStyle='rgba(76,195,138,.35)';ctx.beginPath();ctx.moveTo(pad.l,Y(t[0]));ctx.lineTo(W-pad.r,Y(t[0]));ctx.stroke();});
+  }
+  cv._Y2P=function(py){return lo+(1-(py-pad.t)/(Hme-pad.t-pad.b))*(hi-lo)};
+  cv._X2I=function(px){return Math.round((px-pad.l-cw/2)/cw)};
+}
+/* --- flujo de pasos --- */
+function ir(n){paso=n;chip();dibujar();
+ if(n===0){vista='HTF';subnivel='sop';
+  instr('Estás en el <b>mapa grande (4h)</b>. Primer trabajo de todo análisis: encontrar los niveles donde el precio ya demostró reaccionar. <b>Haz clic sobre la zona donde veas el SOPORTE mayor</b> — busca dónde el precio rebotó con fuerza más de una vez.');
+  fb('');botones([]);}
+ if(n===1){instr('Niveles marcados y guardados. Ahora la dirección: mira los últimos máximos del gráfico (74 → 71 → 68…). <b>¿Qué está haciendo esta estructura?</b>');
+  fb('');botones([
+   {t:'Subiendo con fuerza',f:function(){fb('Mira otra vez los picos: cada máximo es más bajo que el anterior. Eso nunca es fuerza.','mal')}},
+   {t:'Bajando: máximos cada vez más bajos',destacado:false,f:function(){fb('Exacto: escalera bajista dirigiéndose de morros a tu soporte. Contexto listo: si hay trampa, será ahí abajo.','ok');botones([{t:'Bajar al zoom 15m →',destacado:true,f:function(){vista='LTF';ir(2)}}]);}},
+   {t:'Lateral sin dirección',f:function(){fb('Hay estructura clara: compara los picos entre sí. Cada uno más bajo. Eso tiene nombre.','mal')}}]);}
+ if(n===2){instr('Mismo mercado, <b>lupa de 15 minutos</b>: estas son las últimas horas del gráfico anterior. Fíjate: tu línea de soporte sigue dibujada (la franja ámbar es tu zona de interés). El precio está entrando en ella. Aquí NO se opera todavía — aquí se <b>vigila</b>.');
+  fb('El francotirador no persigue al precio: espera tumbado a que el precio venga a su zona.');
+  botones([{t:'El precio llegó. Abrir los indicadores →',destacado:true,f:function(){ir(3)}}]);}
+ if(n===3){instr('Debajo del precio tienes ahora el <b>RSI</b> y el <b>MACD</b> — y olvida los numeritos: se leen con los ojos, comparando formas. Mira los dos mínimos del precio: el segundo (la mecha larga) es MÁS BAJO que el primero. Ahora mira el RSI en esos dos mismos momentos. <b>¿El RSI acompañó al precio a su nuevo mínimo?</b>');
+  fb('');botones([
+   {t:'Sí, el RSI también hizo un mínimo más bajo',f:function(){fb('Mira otra vez: en el segundo mínimo del precio, el valle del RSI queda MÁS ALTO que el primero. No acompañó.','mal')}},
+   {t:'No: el precio bajó más, pero el RSI hizo un mínimo MÁS ALTO',f:function(){marcas.div=true;dibujar();fb('Divergencia alcista: el precio empujó más abajo pero con menos fuerza real. Mira también el MACD: las barras rojas del segundo empujón son más pequeñas — el impulso vendedor se está muriendo mientras barre tus stops. Esto es la Pieza 4.','ok');botones([{t:'Confirmado. Tirar el Fibonacci →',destacado:true,f:function(){ir(4)}}]);}}]);}
+ if(n===4){fibClicks=[];
+  instr('Última herramienta: el <b>retroceso de Fibonacci</b>, para poner objetivos con criterio en vez de con deseo. Se tira sobre el último impulso completo: <b>haz clic primero cerca del MÁXIMO donde empezó la caída</b> (arriba a la izquierda, ~67) <b>y después cerca del MÍNIMO de la mecha</b> (~61.5).');
+  fb('');botones([]);}
+ if(n===5){instr('Todo listo. Repasa tu checklist: contexto bajista llegando a soporte mayor ✔ · zona mapeada de antemano ✔ · barrida con mecha de absorción y reintegro ✔ · divergencia en RSI y MACD ✔. Entrada al cierre del reintegro (62.85), stop bajo la mecha (61.40) = tu 1R. Objetivos: los niveles del Fibonacci. <b>¿Ejecutas?</b>');
+  fb('');botones([{t:'DISPARAR',destacado:true,f:function(){anim=0;clearInterval(animT);animT=setInterval(function(){anim++;dibujar();if(anim>=futuro.length){clearInterval(animT);ir(6)}},140);botones([]);fb('Orden lanzada. Ahora tu único trabajo es no tocar nada.','ok');}},
+   {t:'No lo veo claro',f:function(){fb('También es una respuesta válida en la vida real — pero aquí las 4 piezas están: repásalas arriba. En el mercado, dudar con checklist completa suele ser miedo, no análisis.','')}}]);}
+ if(n===6){instr('El precio recorrió el rebote hasta la zona dorada del Fibonacci (61.8%–78.6% del impulso). Con el plan del manual: parcial cobrado en +1R/+2R, stop del runner a entrada, y el runner persiguió el 100% del retroceso. Resultado de manual: <b>entre +2R y +3R</b> arriesgando 1. Y ahora la letra pequeña, que es la mitad de la lección:');
+  fb('Este gráfico fue construido para contener la historia completa. El mercado real te dará esta misma película muchas veces… y otras muchas, la mecha será la primera de dos, saltará tu stop, y perderás 1R haciendo EXACTAMENTE lo mismo que acabas de hacer. Correcto las dos veces.','ok');
+  botones([{t:'↻ Repetir el simulacro desde cero',f:function(){marcas={sop:null,res:null,fib:null};anim=0;vista='HTF';ir(0)}},
+   {t:'Ir al examen →',destacado:true,f:function(){location.hash='#m12b'}}]);}
+}
+cv.addEventListener('click',function(ev){
+  var r=cv.getBoundingClientRect(),px=ev.clientX-r.left,py=ev.clientY-r.top;
+  var p=cv._Y2P?cv._Y2P(py):null;if(p===null)return;
+  if(paso===0){
+    if(subnivel==='sop'){
+      if(Math.abs(p-62.3)<=1.6){marcas.sop=62.2;dibujar();fb('Soporte clavado: dos rebotes claros en ~62. Guardado. Ahora haz clic donde veas la RESISTENCIA mayor (el techo del mapa).','ok');subnivel='res';}
+      else{fb('Ahí no hay memoria del precio. Busca la zona donde el precio frenó y rebotó DOS veces — abajo del todo.','mal')}}
+    else{
+      if(Math.abs(p-94.5)<=2.2){marcas.res=94.8;dibujar();fb('Resistencia marcada: el techo de 95 donde nació toda la caída. Mapa completo.','ok');botones([{t:'Continuar →',destacado:true,f:function(){ir(1)}}]);}
+      else{fb('Más arriba: la resistencia mayor es el punto más alto donde el mercado giró — el origen de la tendencia.','mal')}}}
+  if(paso===4){
+    var i=cv._X2I(px);
+    if(fibClicks.length===0){
+      if(i<=8&&Math.abs(p-67)<=1.8){fibClicks.push(67.2);fb('Máximo del impulso fijado. Ahora clic en el mínimo de la mecha.','ok')}
+      else fb('El impulso empieza en el máximo de la izquierda (~67), donde arrancó esta caída.','mal');}
+    else if(fibClicks.length===1){
+      if(i>=SWEEP-4&&p<=63){fibClicks.push(61.55);marcas.fib={hi:67.2,lo:61.55};dibujar();
+        fb('Fibonacci desplegado. La zona dorada (61.8%–78.6%, en ámbar) marca hasta dónde suelen respirar los rebotes: tus objetivos ya no son un deseo, son un mapa.','ok');
+        botones([{t:'Al disparo →',destacado:true,f:function(){ir(5)}}]);}
+      else fb('El segundo clic va en el extremo de la mecha de la barrida (abajo a la derecha).','mal');}}
+});
+window.addEventListener('resize',dibujar);
+ir(0);
+
+/* ================= EXAMEN ================= */
+var QS=[
+{t:'Un sistema acierta solo el 30% de las veces, pero cuando gana cobra 4R y cuando pierde paga 1R. ¿Es rentable?',o:['No: perder el 70% de las veces es insostenible','Sí: su esperanza es +0,5R por operación','Depende de la suerte'],c:1,e:'Esperanza = 0,30×4 − 0,70×1 = +0,5R. La tasa de acierto sola no dice NADA: siempre se lee junto al payoff (M-01).'},
+{t:'Llevas 2 ideas perdidas hoy (tu límite diario). Aparece el setup más perfecto que has visto en semanas. ¿Qué haces?',o:['Entro: un setup así no se deja pasar','Entro con la mitad de tamaño, como compromiso','Pantalla apagada: el límite existe exactamente para este momento'],c:2,e:'Tras 2 pérdidas tu química ya no es la de la mañana — y "esta la veo clarísima" es la frase favorita del tilt. La regla se diseñó en frío para vencerte en caliente (M-06, M-09).'},
+{t:'Abres 3 criptos "hermanas" (que se mueven juntas) con 1R de riesgo cada una. Tu riesgo real es…',o:['1R: son operaciones separadas','~3R: es UNA idea de mercado con tres patas','0R si una compensa a la otra'],c:1,e:'La correlación las convierte en una sola idea: un giro del líder ejecuta los tres stops en el mismo minuto. El riesgo se mide por idea, no por posición (C-5.2).'},
+{t:'Rompiste dos reglas del sistema, entraste sin gatillo… y ganaste +4R. Esa operación fue:',o:['Buena: +4R son +4R','Mala: entrenaste al saboteador y corrompiste tu estadística','Neutra: lo importante es la media'],c:1,e:'Resultadismo puro: acabas de pagarte a ti mismo por desobedecer. La factura llega después, multiplicada. Trade bueno = trade según sistema, gane o pierda (M-06).'},
+{t:'En un doble techo de libro, ¿dónde se concentra el lago de liquidez?',o:['Justo ENCIMA de los techos (stops de cortos + compras de ruptura)','En el centro del rango','Muy por debajo del soporte'],c:0,e:'Todo el mundo pone el stop en el mismo sitio obvio: encima del techo. Miles de stops juntos = el lago que el grande necesita para llenarse (M-03).'},
+{t:'Con 40% de acierto, sufrir 6 pérdidas SEGUIDAS en 100 operaciones es…',o:['Señal de que el sistema se rompió','Mala suerte extraordinaria','Prácticamente seguro: estadística normal'],c:2,e:'Con 60% de probabilidad de perder cada trade, la racha de 6 es casi inevitable en 100 intentos. Se dimensiona el riesgo para sobrevivirla, y cuando llega, no es información (M-05).'},
+{t:'El precio hace un mínimo MÁS BAJO, pero el RSI hace un mínimo MÁS ALTO. Eso sugiere que…',o:['La caída se acelera: vender ya','El empuje vendedor pierde fuerza aunque el precio aún baje: posible giro','El RSI está roto'],c:1,e:'Divergencia alcista: precio abajo con menos fuerza real. No es gatillo por sí sola — es la confirmación que valida una barrida (M-04, simulacro).'},
+{t:'¿En qué dirección tiene permiso para moverse un stop loss?',o:['Solo a favor (reduciendo riesgo o asegurando)','En contra, si "necesita aire"','En cualquiera: es mi stop'],c:0,e:'Moverlo en contra es renegociar la pérdida en vivo — promediar con otro disfraz. El stop se coloca en frío y se respeta en caliente (M-09).'},
+{t:'Una vela perfora un soporte con una mecha larga… pero su cuerpo cierra de vuelta DENTRO del rango. Eso es:',o:['Ruptura confirmada: el precio va a seguir cayendo','Una posible barrida: alguien absorbió toda la venta del pánico','Ruido sin significado'],c:1,e:'Cierre fuera con cuerpo = aceptación. Mecha que regresa = absorción: la huella central de este manual (Fig. 3.2).'},
+{t:'Hiciste en UN día la rentabilidad que esperabas del mes. ¿Y ahora?',o:['Paro de operar hasta el mes que viene: a proteger el número','Sigo tomando solo señales A+, a tamaño NORMAL, vigilando la euforia','Subo el tamaño: estoy en racha'],c:1,e:'La esperanza no entiende de calendario: cada señal válida lleva la misma ventaja dentro. Se para por higiene mental si hace falta — nunca por contabilidad. Y el tamaño, congelado (C-8.2).'},
+{t:'Tu diario dice: esperanza +0,6R en las operaciones etiqueta A, y −0,3R en las etiqueta C. La mejora más rentable es…',o:['Buscar un indicador nuevo','Dejar de operar los C: subes la rentabilidad sin cambiar nada más','Operar más para compensar los C'],c:1,e:'La palanca más barata del trading: eliminar los trades con esperanza negativa que ya sabes identificar. Para eso existe la etiqueta de calidad (M-04, M-11).'},
+{t:'¿Cuál es la función REAL de operar siempre con las mismas reglas?',o:['Acertar más veces','Hacer las operaciones comparables: sin eso, tu estadística no mide nada','Impresionar al bróker'],c:1,e:'Cien trades del mismo sistema son un experimento; cien trades "según lo vea" son cien anécdotas. Sin comparabilidad no hay esperanza medible, y sin esperanza medible solo hay fe (C-4.1).'}];
+var cont=$('exam');
+function pintarEx(){var h='';QS.forEach(function(q,i){
+  h+='<div class="q" data-q="'+i+'"><div class="qn">PREGUNTA '+(i+1)+' / '+QS.length+'</div><div class="qt">'+q.t+'</div><div class="ops">';
+  q.o.forEach(function(o,j){h+='<button data-o="'+j+'">'+o+'</button>'});
+  h+='</div><div class="expl">'+q.e+'</div></div>';});
+  cont.innerHTML=h;
+  cont.querySelectorAll('.ops button').forEach(function(b){b.addEventListener('click',function(){
+    b.parentNode.querySelectorAll('button').forEach(function(x){x.classList.remove('sel')});b.classList.add('sel');});});
+  $('ex-nota').style.display='none';}
+pintarEx();
+$('ex-corregir').addEventListener('click',function(){
+  var ok=0,resp=0;
+  cont.querySelectorAll('.q').forEach(function(qd,i){
+    var sel=qd.querySelector('button.sel');var btns=qd.querySelectorAll('.ops button');
+    btns.forEach(function(b,j){b.classList.remove('ok','mal');if(j===QS[i].c)b.classList.add('ok');});
+    if(sel){resp++;if(+sel.getAttribute('data-o')===QS[i].c)ok++;else{sel.classList.add('mal');qd.querySelector('.expl').style.display='block';}}
+    else qd.querySelector('.expl').style.display='block';});
+  var n=$('ex-nota');n.style.display='block';
+  var rango= ok>=11?['FRANCOTIRADOR','v-alza','Dominio casi total. Permiso para el gatillo — que tu diario confirme en real lo que sabes en teoría.']
+    : ok>=9?['TIRADOR','v-alza','Aprobado con solvencia. Repasa las explicaciones de tus fallos: suelen señalar el sesgo que te visitará primero.']
+    : ok>=6?['RECLUTA','v-neutro','Vas entendiendo el mapa pero aún respondes con reflejos de la calle. Relee M-01, M-05 y M-06 y reintenta: el mercado examina sin avisar.']
+    :['CIVIL CON ARMA','v-baja','Con esta nota, operar dinero real es donar dinero real. Nada malo en ello — todos empezamos aquí. Manual desde el principio, sin prisa, y el simulacro dos veces.'];
+  n.className='veredicto '+rango[1];
+  n.innerHTML='<span class="big">'+ok+' / '+QS.length+' · Rango: '+rango[0]+'</span>'+rango[2]+(resp<QS.length?' (Dejaste '+(QS.length-resp)+' sin responder — en el mercado, no responder también es una posición.)':'');
+  try{var best=+localStorage.getItem('ft_examen')||0;if(ok>best)localStorage.setItem('ft_examen',ok);}catch(e){}
+});
+$('ex-reset').addEventListener('click',pintarEx);
+})();
+</script>
+<script>
+(function(){
+"use strict";
+/* menú móvil: clona los enlaces del raíl */
+var mnav=document.getElementById('mnav'),tog=document.getElementById('nav-toggle');
+document.querySelectorAll('nav.rail a.item').forEach(function(a){
+  var c=a.cloneNode(true);c.classList.remove('active');mnav.appendChild(c);
+  c.addEventListener('click',function(){mnav.classList.remove('open');tog.textContent='☰'});
+});
+tog.addEventListener('click',function(){
+  var ab=mnav.classList.toggle('open');tog.textContent=ab?'✕':'☰';
+});
+/* figuras anchas: contenedor con desplazamiento propio (la página nunca se mueve) */
+function envolver(svg,minw){
+  if(svg.closest('.scrollx'))return;
+  var w=document.createElement('div');w.className='scrollx';
+  svg.parentNode.insertBefore(w,svg);w.appendChild(svg);
+  svg.style.minWidth=minw+'px';
+  var h=document.createElement('div');h.className='swipehint';h.textContent='⟷ desliza dentro de la figura para recorrerla entera';
+  w.parentNode.insertBefore(h,w);
+}
+function revisarFiguras(){
+  if(!matchMedia('(max-width:700px)').matches)return;
+  document.querySelectorAll('figure.fig > svg').forEach(function(s){
+    var vb=(s.getAttribute('viewBox')||'0 0 400 200').split(' ');
+    if(+vb[2]>500)envolver(s,640);
+  });
+  var e=document.getElementById('e-svg');if(e)envolver(e,520);
+}
+revisarFiguras();
+window.addEventListener('resize',revisarFiguras);
+/* al girar el móvil, los lienzos se recalculan */
+window.addEventListener('orientationchange',function(){setTimeout(function(){window.dispatchEvent(new Event('resize'))},250)});
+})();
+</script>
+<script>
+(function(){
+"use strict";
+var $=function(id){return document.getElementById(id)};
+function sget(k){try{return localStorage.getItem(k)}catch(e){return null}}
+function sset(k,v){try{localStorage.setItem(k,v)}catch(e){}}
+
+/* ================= CAMPO DE TIRO ================= */
+var cv=$('tiro-cv'),ctx=cv.getContext('2d');
+var esc=null, resuelto=false;
+function rnd(a,b){return a+Math.random()*(b-a)}
+function generar(){
+  var lado=Math.random()<0.5?'sop':'res'; /* soporte->trampa alcista, resistencia->trampa bajista */
+  var tipo=Math.random()<0.36?'trampa':Math.random()<0.56?'ruptura':'no';
+  var subNo=Math.random()<0.5?'sinMemoria':'indeciso';
+  var L=100, cl=[], p=L+rnd(6,9)*(lado==='sop'?1:-1);
+  var toques=(tipo==='no'&&subNo==='sinMemoria')?1:2;
+  var dir=lado==='sop'?-1:1;
+  /* deriva hacia el nivel con toques y rebotes */
+  var i, reb=0;
+  for(i=0;i<26;i++){
+    p+=dir*rnd(0.15,0.7)+rnd(-0.5,0.5);
+    var dist=(p-L)*(-dir);
+    if(dist<0.6&&reb<toques-0){ /* toque: rebote */
+      if(reb<toques){p=L+(-dir)*rnd(0.2,0.6);cl.push(p);reb++;
+        var salto=rnd(2.5,4.5);for(var j=0;j<4;j++){p+=(-dir)*salto/4+rnd(-0.4,0.4);cl.push(p);i++;}
+        continue;}
+    }
+    cl.push(p);
+  }
+  /* acercamiento final al nivel */
+  while((cl[cl.length-1]-L)*(-dir)>1.1){cl.push(cl[cl.length-1]+dir*rnd(0.3,0.7)+rnd(-0.25,0.25));}
+  /* vela clave */
+  var prev=cl[cl.length-1], key={o:prev};
+  if(tipo==='trampa'){key.ext=L+dir*rnd(0.9,1.7);key.c=L+(-dir)*rnd(0.25,0.7);}
+  else if(tipo==='ruptura'){key.ext=L+dir*rnd(1.1,1.9);key.c=L+dir*rnd(0.7,1.2);}
+  else if(subNo==='indeciso'){key.ext=L+dir*rnd(0.8,1.4);key.c=L+dir*rnd(-0.12,0.15);}
+  else {key.ext=L+dir*rnd(0.9,1.6);key.c=L+(-dir)*rnd(0.2,0.6);} /* parece trampa pero el nivel no tiene memoria */
+  cl.push(key.c);
+  /* futuro */
+  var fut=[],fp=key.c;
+  for(var k=0;k<12;k++){
+    if(tipo==='trampa')fp+=(-dir)*rnd(0.5,1.1)+rnd(-0.3,0.3);
+    else if(tipo==='ruptura')fp+=dir*rnd(0.5,1.1)+rnd(-0.3,0.3);
+    else fp+=rnd(-0.9,0.9)+(k>6?rnd(-0.4,0.4):0);
+    fut.push(fp);
+  }
+  return {lado:lado,tipo:tipo,subNo:subNo,L:L,cl:cl,key:key,fut:fut,keyIdx:cl.length-1,verFut:0};
+}
+function velasDe(cl,keyIdx,key){
+  var v=[];for(var i=0;i<cl.length;i++){var o=i?cl[i-1]:cl[0],c=cl[i];
+    var w=0.15+((i*31)%17)/40, h=Math.max(o,c)+w*0.6, l=Math.min(o,c)-w*0.6;
+    if(i===keyIdx&&key){if(key.ext>Math.max(o,c))h=key.ext;else l=key.ext;}
+    v.push({o:o,h:h,l:l,c:c});}
+  return v;
+}
+function pintarTiro(){
+  var W=cv.clientWidth,H=330,dpr=window.devicePixelRatio||1;
+  cv.width=W*dpr;cv.height=H*dpr;cv.style.height=H+'px';ctx.setTransform(dpr,0,0,dpr,0,0);ctx.clearRect(0,0,W,H);
+  var serie=esc.cl.concat(esc.fut.slice(0,esc.verFut));
+  var vs=velasDe(serie,esc.keyIdx,esc.key);
+  var lo=1e9,hi=-1e9;vs.forEach(function(v){if(v.l<lo)lo=v.l;if(v.h>hi)hi=v.h});
+  if(esc.L<lo)lo=esc.L;if(esc.L>hi)hi=esc.L;
+  var m=(hi-lo)*0.08;lo-=m;hi+=m;
+  var pad={l:12,r:46,t:12,b:10},N=vs.length,cw=(W-pad.l-pad.r)/N;
+  function X(i){return pad.l+i*cw+cw/2}
+  function Y(p){return pad.t+(1-(p-lo)/(hi-lo))*(H-pad.t-pad.b)}
+  ctx.font='10px "IBM Plex Mono"';
+  ctx.strokeStyle='#FFB021';ctx.setLineDash([6,5]);ctx.beginPath();ctx.moveTo(pad.l,Y(esc.L));ctx.lineTo(W-pad.r,Y(esc.L));ctx.stroke();ctx.setLineDash([]);
+  ctx.fillStyle='#FFB021';ctx.fillText('NIVEL',W-pad.r+6,Y(esc.L)+3);
+  vs.forEach(function(v,i){var up=v.c>=v.o,col=up?'#4CC38A':'#E5534B';
+    if(i===esc.keyIdx){ctx.fillStyle='rgba(255,176,33,.10)';ctx.fillRect(X(i)-cw*0.5,pad.t,cw,H-pad.t-pad.b);}
+    ctx.strokeStyle=col;ctx.lineWidth=i===esc.keyIdx?2:1.1;
+    ctx.beginPath();ctx.moveTo(X(i),Y(v.h));ctx.lineTo(X(i),Y(v.l));ctx.stroke();
+    ctx.fillStyle=col;var a=Y(Math.max(v.o,v.c)),b=Y(Math.min(v.o,v.c));
+    ctx.fillRect(X(i)-Math.max(1.4,cw*0.32),a,Math.max(2.8,cw*0.64),Math.max(1.4,b-a));});
+  ctx.fillStyle='#6B7583';ctx.fillText('▲ vela clave',X(esc.keyIdx)-28,H-14);
+}
+function statsTiro(){
+  var s;try{s=JSON.parse(sget('ft_tiro')||'{"n":0,"ok":0,"racha":0,"mejor":0,"pc":{}}')}catch(e){s={n:0,ok:0,racha:0,mejor:0,pc:{}}}
+  return s;
+}
+function pintarStats(){
+  var s=statsTiro(),t=$('tiro-stats');
+  var pcn=function(k){var d=s.pc[k]||{n:0,ok:0};return d.n?Math.round(d.ok/d.n*100)+'%':'—'};
+  t.innerHTML='<span>Escenarios: <b>'+s.n+'</b></span><span>Reconocimiento: <b>'+(s.n?Math.round(s.ok/s.n*100)+'%':'—')+'</b></span><span>Racha: <b>'+s.racha+'</b> (mejor '+s.mejor+')</span><span>Trampas: <b>'+pcn('trampa')+'</b></span><span>Rupturas: <b>'+pcn('ruptura')+'</b></span><span>No operar: <b>'+pcn('no')+'</b></span>';
+}
+function nuevoEsc(){
+  esc=generar();resuelto=false;esc.verFut=0;
+  pintarTiro();pintarStats();
+  $('tiro-fb').textContent='';$('tiro-fb').className='sim-fb';
+  var h='';[['trampa','TRAMPA (barrida)'],['ruptura','RUPTURA REAL'],['no','NO OPERAR']].forEach(function(o){
+    h+='<button class="pbtn" data-r="'+o[0]+'">'+o[1]+'</button>';});
+  $('tiro-btns').innerHTML=h;
+  $('tiro-btns').querySelectorAll('button').forEach(function(b){b.addEventListener('click',function(){responder(b.getAttribute('data-r'))})});
+}
+function responder(r){
+  if(resuelto)return;resuelto=true;
+  var ok=r===esc.tipo, s=statsTiro();
+  s.n++;if(ok){s.ok++;s.racha++;if(s.racha>s.mejor)s.mejor=s.racha;}else s.racha=0;
+  s.pc[esc.tipo]=s.pc[esc.tipo]||{n:0,ok:0};s.pc[esc.tipo].n++;if(ok)s.pc[esc.tipo].ok++;
+  sset('ft_tiro',JSON.stringify(s));pintarStats();
+  var por={trampa:'perforó con mecha y el cuerpo cerró DE VUELTA dentro, sobre un nivel con memoria (dos toques): absorción — el giro era el escenario principal.',
+    ruptura:'el cuerpo entero cerró AL OTRO LADO del nivel: aceptación del territorio nuevo. Comprar el retorno aquí es ponerse delante del tren.',
+    no:esc.subNo==='indeciso'?'la vela clave cerró PEGADA al nivel, sin decidir: ni absorción ni aceptación. Sin pieza clara, la respuesta del sistema es la silla vacía.':'la mecha parecía de manual… pero el nivel solo tenía UN toque: sin memoria no hay lago, y sin lago la mecha es ruido. Faltaba una pieza = no existe la operación.'};
+  var fb=$('tiro-fb');
+  fb.textContent=(ok?'✔ Correcto: ':'✘ Era «'+({trampa:'TRAMPA',ruptura:'RUPTURA REAL',no:'NO OPERAR'})[esc.tipo]+'»: ')+por[esc.tipo];
+  fb.className='sim-fb '+(ok?'ok':'mal');
+  var t=setInterval(function(){esc.verFut++;pintarTiro();if(esc.verFut>=esc.fut.length)clearInterval(t)},90);
+  $('tiro-btns').innerHTML='<button class="pbtn" id="tiro-next" style="border-color:var(--trazador);color:var(--trazador)">Siguiente escenario →</button>';
+  $('tiro-next').addEventListener('click',nuevoEsc);
+}
+window.addEventListener('resize',function(){if(esc)pintarTiro()});
+nuevoEsc();
+
+/* ================= AUDITORÍA ================= */
+function entradas(){try{return JSON.parse(sget('ft_diario')||'[]')}catch(e){return[]}}
+$('aud-btn').addEventListener('click',function(){
+  var a=entradas().slice().sort(function(x,y){return (x.f+(x.h||'')).localeCompare(y.f+(y.h||''))});
+  var res=$('aud-res');
+  if(a.length<5){res.innerHTML='<div class="veredicto v-neutro" style="margin-top:14px"><span class="big">Muestra: '+a.length+' registros</span>Con menos de 5 operaciones no hay nada serio que auditar. Registra y vuelve — la máquina espera con paciencia infinita.</div>';return}
+  var rs=a.map(function(t){return t.r});
+  function media(x){return x.length?x.reduce(function(s,v){return s+v},0)/x.length:0}
+  function grupo(fn){var g={};a.forEach(function(t){var k=fn(t);if(k===null)return;(g[k]=g[k]||[]).push(t.r)});return g}
+  var esp=media(rs);
+  /* curva en R + drawdown */
+  var cum=[],c=0,pico=0,dd=0;rs.forEach(function(r){c+=r;cum.push(c);if(c>pico)pico=c;if(pico-c>dd)dd=pico-c});
+  /* rachas */
+  var mrl=0,cur=0;rs.forEach(function(r){if(r<0){cur++;if(cur>mrl)mrl=cur}else cur=0});
+  /* por calidad */
+  var gc=grupo(function(t){return t.c||null});
+  /* por franja */
+  var gf=grupo(function(t){if(!t.h)return null;var h=+t.h.slice(0,2);return h<8?'00–08h':h<12?'08–12h':h<16?'12–16h':h<20?'16–20h':'20–24h'});
+  /* por activo */
+  var ga=grupo(function(t){return t.a||null});
+  function fila(k,v){var e=media(v);var col=e>0.05?'#4CC38A':e<-0.05?'#E5534B':'#FFB021';
+    return '<div class="aud-linea">'+k+' — '+v.length+' ops · esperanza <span style="color:'+col+'">'+(e>=0?'+':'')+e.toFixed(2)+'R</span> · total '+(v.reduce(function(s,x){return s+x},0)>=0?'+':'')+v.reduce(function(s,x){return s+x},0).toFixed(1)+'R</div>'}
+  var h='<h4>Curva de tu cuenta (en R)</h4><canvas id="aud-cv" height="180" style="width:100%;background:var(--tinta);border:1px solid var(--linea);border-radius:4px"></canvas>';
+  h+='<h4>Cifras globales</h4>'+fila('Todo el diario',rs)+'<div class="aud-linea">Drawdown máximo: <span style="color:#E5534B">−'+dd.toFixed(1)+'R</span> · peor racha: '+mrl+' pérdidas seguidas</div>';
+  h+='<h4>Por calidad de setup</h4>';['A','B','C'].forEach(function(k){if(gc[k])h+=fila('Etiqueta '+k,gc[k])});
+  h+='<h4>Por franja horaria</h4>';Object.keys(gf).sort().forEach(function(k){h+=fila(k,gf[k])});
+  h+='<h4>Por activo</h4>';Object.keys(ga).sort(function(x,y){return ga[y].length-ga[x].length}).slice(0,8).forEach(function(k){h+=fila(k,ga[k])});
+  /* hallazgos redactados */
+  var hall=[];
+  if(gc.C&&gc.C.length>=4&&media(gc.C)<0)hall.push('Tus operaciones etiqueta C tienen esperanza '+media(gc.C).toFixed(2)+'R en '+gc.C.length+' intentos: dejar de operarlas te habría dado '+Math.abs(gc.C.reduce(function(s,x){return s+x},0)).toFixed(1)+'R extra. La mejora más barata disponible.');
+  Object.keys(gf).forEach(function(k){var v=gf[k];if(v.length>=4&&v.reduce(function(s,x){return s+x},0)<=-2)hall.push('La franja '+k+' acumula '+v.reduce(function(s,x){return s+x},0).toFixed(1)+'R en '+v.length+' operaciones: candidata firme a horario prohibido mecánico (M-05B, el desierto).');});
+  Object.keys(ga).forEach(function(k){var v=ga[k];if(v.length>=5&&media(v)<-0.15)hall.push('El activo '+k+' te cuesta '+media(v).toFixed(2)+'R de media en '+v.length+' intentos: o su personalidad no encaja con tu ojo, o lo operas en mal clima. Auditar antes de insistir.');});
+  if(gc.A&&gc.A.length>=4&&media(gc.A)>0.2&&gc.B&&media(gc.B)<0.05)hall.push('Tus A rinden ('+media(gc.A).toFixed(2)+'R) y tus B apenas ('+media(gc.B).toFixed(2)+'R): la evidencia sugiere subir el listón y operar solo A. Menos disparos, misma o más ganancia.');
+  if(!hall.length)hall.push('Sin fugas evidentes con la muestra actual — o tu ejecución es limpia, o aún faltan datos para que la fuga asome. Sigue registrando.');
+  h+='<h4>Hallazgos</h4>';hall.forEach(function(x){h+='<div class="aud-hallazgo">'+x+'</div>'});
+  if(a.length<30)h+='<div class="veredicto v-neutro" style="margin-top:12px"><span class="big">Aviso de muestra: '+a.length+'/30</span>Todo lo anterior es provisional. Con menos de 30 registros, trata los hallazgos como sospechas a vigilar, no como sentencias.</div>';
+  res.innerHTML=h;
+  /* dibujar curva */
+  var acv=$('aud-cv'),atx=acv.getContext('2d');
+  var W=acv.clientWidth,H=180,dpr=window.devicePixelRatio||1;
+  acv.width=W*dpr;acv.height=H*dpr;atx.setTransform(dpr,0,0,dpr,0,0);
+  var lo=Math.min(0,Math.min.apply(null,cum)),hi=Math.max(0,Math.max.apply(null,cum)),mm=(hi-lo)*0.1||1;lo-=mm;hi+=mm;
+  var pad={l:40,r:12,t:10,b:8};
+  function X(i){return pad.l+(i/(cum.length-1||1))*(W-pad.l-pad.r)}
+  function Y(v){return pad.t+(1-(v-lo)/(hi-lo))*(H-pad.t-pad.b)}
+  atx.font='10px "IBM Plex Mono"';atx.strokeStyle='#3a4552';atx.beginPath();atx.moveTo(pad.l,Y(0));atx.lineTo(W-pad.r,Y(0));atx.stroke();
+  atx.fillStyle='#6B7583';atx.fillText('0R',10,Y(0)+3);atx.fillText((hi-mm).toFixed(0)+'R',10,Y(hi-mm)+3);
+  atx.strokeStyle='#FFB021';atx.lineWidth=2;atx.beginPath();
+  cum.forEach(function(v,i){i?atx.lineTo(X(i),Y(v)):atx.moveTo(X(i),Y(v))});atx.stroke();
+});
+
+/* ================= COPIAS DE SEGURIDAD ================= */
+var CLAVES=['ft_diario','ft_firma','ft_nombre','ft_fecha','ft_examen','ft_tiro','ft_chk','ft_chk_dia','ft_backup_ts'];
+$('bk-exp').addEventListener('click',function(){
+  var d={_manual:'francotirador',_fecha:new Date().toISOString()};
+  CLAVES.forEach(function(k){var v=sget(k);if(v!==null)d[k]=v});
+  var el=document.createElement('a');
+  el.href='data:application/json;charset=utf-8,'+encodeURIComponent(JSON.stringify(d,null,1));
+  el.download='francotirador_backup_'+new Date().toISOString().slice(0,10)+'.json';el.click();
+  sset('ft_backup_ts',Date.now()+'');$('bk-msg').textContent='Copia descargada. Guárdala donde guardes lo importante.';avisoBk();
+});
+$('bk-imp').addEventListener('click',function(){$('bk-file').click()});
+$('bk-file').addEventListener('change',function(ev){
+  var f=ev.target.files[0];if(!f)return;
+  var r=new FileReader();
+  r.onload=function(){try{
+    var d=JSON.parse(r.result);
+    if(d._manual!=='francotirador')throw 0;
+    CLAVES.forEach(function(k){if(d[k]!==undefined)sset(k,d[k])});
+    $('bk-msg').textContent='Copia restaurada. Recargando…';
+    setTimeout(function(){location.reload()},900);
+  }catch(e){$('bk-msg').textContent='Ese archivo no parece una copia válida del manual.'}};
+  r.readAsText(f);
+});
+function avisoBk(){
+  var av=$('bk-aviso');var n=entradas().length;var ts=+(sget('ft_backup_ts')||0);
+  var dias=ts?Math.floor((Date.now()-ts)/864e5):null;
+  if(n>=5&&(ts===0||dias>7)){av.style.display='block';
+    av.innerHTML='<span class="big">Tu diario no tiene copia '+(ts?'desde hace '+dias+' días':'todavía')+'</span>Llevas '+n+' operaciones registradas viviendo solo en este navegador. Un clic en «Exportar todo» y duermen a salvo.';}
+  else av.style.display='none';
+}
+avisoBk();
+})();
+</script>
+</body>
+</html>
